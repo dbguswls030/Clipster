@@ -7,7 +7,8 @@ let project = Project(
             name: "Clipster",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.Clipster.Clipster",
+            bundleId: "com.Clipster.app",
+            deploymentTargets: .iOS("16.0"),
             infoPlist: .extendingDefault(
                 with: [
                     "UILaunchStoryboardName": "LaunchScreen.storyboard",

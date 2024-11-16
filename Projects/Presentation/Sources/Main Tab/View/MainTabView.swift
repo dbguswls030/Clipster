@@ -44,6 +44,7 @@ public struct MainTabView: View {
         }
         .onChange(of: pastedURL) { newPastedURL in
             print(newPastedURL)
+            // TODO: 링크 저장 유도하는 토스트
         }
     }
 }

@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import Presentation
 
 @main
 struct ClipsterApp: App {
     var body: some Scene {
         WindowGroup{
-            
+            MainTabView()
         }
     }
 }

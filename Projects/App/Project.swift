@@ -7,7 +7,7 @@ let project = Project(
             name: "Clipster",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.Clipster.app",
+            bundleId: "com.ryuhyeonjinclipster.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: .extendingDefault(
                 with: [

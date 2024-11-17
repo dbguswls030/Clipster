@@ -12,8 +12,8 @@ public struct MainTabView: View {
     @State private var selection: TabCase = .clips
     @State private var hasPasteBoard: Bool = false
     @State private var pastedURL: URL? = nil
-    @State private var toast: ToastModel? = ToastModel.sampleModel
-    
+    @State private var toast: ToastModel? = nil
+    @State private var workItem: DispatchWorkItem?
     public init() {}
     
     public var body: some View {
@@ -49,24 +49,15 @@ public struct MainTabView: View {
             if let newURL = newPastedURL{
                 toast = ToastModel(url: newURL)
             }
-            
-            // TODO: 링크 저장 유도하는 토스트
-            // 링크가 있을 때 뷰 생성
-            // 토스트 생성 시 백그라운드 뷰 그림자
-            // 위에서 올라와야 함
-            // 시간이 지나거나,
         }
         .overlay {
-            VStack(){
-                Spacer()
+            ZStack(){
                 mainToastView()
-                    .frame(height: 100)
-            }
-            .padding(.horizontal)
-            .transition(.move(edge: .bottom))
+            }.animation(.spring, value: toast)
+                .padding(.horizontal)
         }
         .onChange(of: toast) { newToast in
-            
+            showToast()
         }
     }
     
@@ -75,12 +66,38 @@ public struct MainTabView: View {
             VStack {
                 Spacer()
                 ToastView(url: toast.url)
+                    .frame(height: 100)
             }
             .transition(.move(edge: .bottom))
         }
     }
+    
+    private func showToast() {
+        guard let toast = toast else { return }
+        
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        
+        if toast.duration > 0 {
+            workItem?.cancel()
+            
+            let task = DispatchWorkItem {
+                dismissToast()
+            }
+            
+            workItem = task
+            DispatchQueue.main.asyncAfter(deadline: .now() + toast.duration, execute: task)
+        }
+    }
+    
+    private func dismissToast() {
+        withAnimation {
+            toast = nil
+        }
+        
+        workItem?.cancel()
+        workItem = nil
+    }
 }
-
 
 #Preview {
     MainTabView()

@@ -11,11 +11,13 @@ public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var selection: TabCase = .clips
     @State private var hasPasteBoard: Bool = false
-    @State private var pastedURL: URL?
+    @State private var pastedURL: URL? = nil
+    @State private var toast: ToastModel? = ToastModel.sampleModel
     
     public init() {}
     
     public var body: some View {
+        
         TabView(selection: $selection){
             MyClipView()
                 .tabItem {
@@ -44,7 +46,37 @@ public struct MainTabView: View {
         }
         .onChange(of: pastedURL) { newPastedURL in
             print(newPastedURL)
+            if let newURL = newPastedURL{
+                toast = ToastModel(url: newURL)
+            }
+            
             // TODO: 링크 저장 유도하는 토스트
+            // 링크가 있을 때 뷰 생성
+            // 토스트 생성 시 백그라운드 뷰 그림자
+            // 위에서 올라와야 함
+            // 시간이 지나거나,
+        }
+        .overlay {
+            VStack(){
+                Spacer()
+                mainToastView()
+                    .frame(height: 100)
+            }
+            .padding(.horizontal)
+            .transition(.move(edge: .bottom))
+        }
+        .onChange(of: toast) { newToast in
+            
+        }
+    }
+    
+    @ViewBuilder func mainToastView() -> some View {
+        if let toast = toast {
+            VStack {
+                Spacer()
+                ToastView(url: toast.url)
+            }
+            .transition(.move(edge: .bottom))
         }
     }
 }

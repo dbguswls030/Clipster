@@ -9,46 +9,28 @@ import SwiftUI
 
 public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
-    @State private var selection: TabCase = .clips
-    @State private var hasPasteBoard: Bool = false
-    @State private var pastedURL: URL?
-    
-    public init() {}
-    
+    @StateObject private var viewModel = MainTabViewModel()
+
+    public init() {}    
     public var body: some View {
-        TabView(selection: $selection){
-            MyClipView()
-                .tabItem {
-                    Label("clips", systemImage: "star")
-                }
-                .tag(TabCase.clips)
-            MyPageView()
-                .tabItem{
-                    Label("My", systemImage: "star.fill")
-                }
-                .tag(TabCase.myPage)
-        }
-        .onChange(of: scenePhase) { phase in
-            if phase == .active, UIPasteboard.general.hasURLs{
-                hasPasteBoard = true
-            }else if phase == .background{
-                hasPasteBoard = false
+            TabView(selection: $viewModel.selection){
+                MyClipView()
+                    .tabItem {
+                        Label("clips", systemImage: "star")
+                    }
+                    .tag(TabCase.clips)
+                MyPageView()
+                    .tabItem{
+                        Label("My", systemImage: "star.fill")
+                    }
+                    .tag(TabCase.myPage)
             }
-        }
-        .onChange(of: hasPasteBoard) {
-            if $0{
-                if pastedURL != UIPasteboard.general.url{
-                    pastedURL = UIPasteboard.general.url
-                }
+            .onChange(of: scenePhase) { phase in
+                viewModel.handleScenePhaseChange(phase)
             }
-        }
-        .onChange(of: pastedURL) { newPastedURL in
-            print(newPastedURL)
-            // TODO: 링크 저장 유도하는 토스트
-        }
+            .toastView(toast: $viewModel.toast)
     }
 }
-
 
 #Preview {
     MainTabView()

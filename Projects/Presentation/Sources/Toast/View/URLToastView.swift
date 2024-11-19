@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct URLToastView: View {
-//    @Binding var toastModel: ToastModel
     var url: URL
+    var cancelButtonAction: (() -> Void)
     var body: some View {
         VStack{
             HStack{
                 Spacer()
                 Button{
-                    
+                    cancelButtonAction()
                 } label: {
                     Image(systemName: "xmark")
                 }
@@ -41,5 +41,5 @@ struct URLToastView: View {
 }
 
 #Preview {
-    URLToastView(url: URL(string: "https://growingsaja.tistory.com/811")!)
+    URLToastView(url: URL(string: "https://growingsaja.tistory.com/811")!, cancelButtonAction: {})
 }

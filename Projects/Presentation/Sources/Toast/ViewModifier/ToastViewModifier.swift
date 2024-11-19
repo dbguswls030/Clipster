@@ -16,8 +16,12 @@ struct ToastViewModifier: ViewModifier {
             .overlay {
                 ZStack(){
                     makeToastView()
-                }.animation(.spring, value: toast)
-                    .padding(.horizontal)
+                }
+                .animation(.spring, value: toast)
+                .padding(.horizontal)
+            }
+            .onChange(of: toast) { value in
+                showToast()
             }
     }
     
@@ -25,8 +29,9 @@ struct ToastViewModifier: ViewModifier {
         if let toast = toast {
             VStack {
                 Spacer()
-                URLToastView(url: toast.url)
-                    .frame(height: 100)
+                URLToastView(url: toast.url){
+                    dismissToast()
+                }
             }
             .transition(.move(edge: .bottom))
         }

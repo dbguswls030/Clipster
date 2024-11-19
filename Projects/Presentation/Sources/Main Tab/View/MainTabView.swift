@@ -10,26 +10,25 @@ import SwiftUI
 public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = MainTabViewModel()
-    
-    public init() {}
-    
+
+    public init() {}    
     public var body: some View {
-        TabView(selection: $viewModel.selection){
-            MyClipView()
-                .tabItem {
-                    Label("clips", systemImage: "star")
-                }
-                .tag(TabCase.clips)
-            MyPageView()
-                .tabItem{
-                    Label("My", systemImage: "star.fill")
-                }
-                .tag(TabCase.myPage)
-        }
-        .onChange(of: scenePhase, perform: viewModel.handleScenePhaseChange)
-        .onChange(of: viewModel.hasPasteBoard, perform: viewModel.pasteURL)
-        .onChange(of: viewModel.pastedURL, perform: viewModel.makeURL)
-        .toastView(toast: $viewModel.toast)
+            TabView(selection: $viewModel.selection){
+                MyClipView()
+                    .tabItem {
+                        Label("clips", systemImage: "star")
+                    }
+                    .tag(TabCase.clips)
+                MyPageView()
+                    .tabItem{
+                        Label("My", systemImage: "star.fill")
+                    }
+                    .tag(TabCase.myPage)
+            }
+            .onChange(of: scenePhase) { phase in
+                viewModel.handleScenePhaseChange(phase)
+            }
+            .toastView(toast: $viewModel.toast)
     }
 }
 

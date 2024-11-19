@@ -1,5 +1,5 @@
 //
-//  ToastView.swift
+//  URLToastView.swift
 //  Presentation
 //
 //  Created by 유현진 on 11/17/24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ToastView: View {
+struct URLToastView: View {
 //    @Binding var toastModel: ToastModel
     var url: URL
     var body: some View {
@@ -41,5 +41,5 @@ struct ToastView: View {
 }
 
 #Preview {
-    ToastView(url: URL(string: "https://growingsaja.tistory.com/811")!)
+    URLToastView(url: URL(string: "https://growingsaja.tistory.com/811")!)
 }

@@ -9,13 +9,14 @@ import SwiftUI
 
 struct ToastViewModifier: ViewModifier {
     @Binding var toast: ToastModel?
+    @Binding var isPresentSaveURL: Bool
     @State private var workItem: DispatchWorkItem?
     
     func body(content: Content) -> some View {
         content
             .overlay {
                 ZStack(){
-                    makeToastView()
+                    makeCreateClipURLToastView()
                 }
                 .animation(.spring, value: toast)
                 .padding(.horizontal)
@@ -23,14 +24,17 @@ struct ToastViewModifier: ViewModifier {
             .onChange(of: toast) { value in
                 showToast()
             }
+            
     }
     
-    @ViewBuilder func makeToastView() -> some View {
+    @ViewBuilder func makeCreateClipURLToastView() -> some View {
         if let toast = toast {
             VStack {
                 Spacer()
                 URLToastView(url: toast.url){
                     dismissToast()
+                } saveButonAction: {
+                    showSaveURL()
                 }
             }
             .transition(.move(edge: .bottom))
@@ -62,10 +66,14 @@ struct ToastViewModifier: ViewModifier {
         workItem?.cancel()
         workItem = nil
     }
+    
+    private func showSaveURL(){
+        isPresentSaveURL = true
+    }
 }
 
 extension View {
-    func toastView(toast: Binding<ToastModel?>) -> some View {
-        self.modifier(ToastViewModifier(toast: toast))
+    func toastView(toast: Binding<ToastModel?>, isPresentSaveURL: Binding<Bool>) -> some View {
+        self.modifier(ToastViewModifier(toast: toast, isPresentSaveURL: isPresentSaveURL))
     }
 }

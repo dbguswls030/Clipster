@@ -10,9 +10,12 @@ import SwiftUI
 public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = MainTabViewModel()
-
-    public init() {}    
+    @State private var isPresentSaveURL: Bool = false
+    
+    public init() {}
+    
     public var body: some View {
+        NavigationStack {
             TabView(selection: $viewModel.selection){
                 MyClipView()
                     .tabItem {
@@ -28,7 +31,11 @@ public struct MainTabView: View {
             .onChange(of: scenePhase) { phase in
                 viewModel.handleScenePhaseChange(phase)
             }
-            .toastView(toast: $viewModel.toast)
+            .toastView(toast: $viewModel.toast, isPresentSaveURL: $isPresentSaveURL)
+            .navigationDestination(isPresented: $isPresentSaveURL) {
+                CreateClipView()
+            }
+        }
     }
 }
 

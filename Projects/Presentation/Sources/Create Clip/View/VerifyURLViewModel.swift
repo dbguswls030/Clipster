@@ -7,25 +7,71 @@
 
 import SwiftUI
 import Combine
+import SwiftSoup
+
+struct URLMetaData{
+    var title: String?
+    var description: String?
+    var thumbnailImage: URL?
+}
+
 class VerifyURLViewModel: ObservableObject{
     @Published var url: String = ""
-    @State private var cancellables = Set<AnyCancellable>()
+    @Published var metaData: URLMetaData?
+    
+    private var cancellables = Set<AnyCancellable>()
+    
     init(){
         bind()
     }
     
     private func bind(){
         $url
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .flatMap { URLSession.shared.dataTaskPublisher(for: URL(string: $0)!) }
-            .sink { completion in
-                print("옳지 않은 URL")
-            } receiveValue: { output in
-                print(output.data)
+            .debounce(for: 1, scheduler: RunLoop.main)
+            .compactMap{URL(string: $0)}
+            .removeDuplicates()
+            .flatMap{ url in
+                self.fetchMetaData(url: url)
+            }
+            .receive(on: RunLoop.main)
+            .sink { [weak self] metaData in
+                self?.metaData = metaData
             }
             .store(in: &cancellables)
-
-                
+        
+        $metaData
+            .compactMap{$0}
+            .sink { metaData in
+                print(metaData.title)
+                print(metaData.description)
+                print(metaData.thumbnailImage)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>{
+        URLSession.shared.dataTaskPublisher(for: url)
+            .map(\.data)
+            .tryMap{ data -> URLMetaData? in
+                let html = String(data: data, encoding: .utf8) ?? ""
+                return try self.parseHTML(html)
+            }
+            .replaceError(with: nil)
+            .eraseToAnyPublisher()
             
+    }
+    
+    private func parseHTML(_ html: String) throws -> URLMetaData? {
+        let document = try SwiftSoup.parse(html)
+        
+        // Open Graph 메타데이터 추출
+        let title = try document.select("meta[property=og:title]").attr("content")
+        let description = try document.select("meta[property=og:description]").attr("content")
+        let imageURLString = try document.select("meta[property=og:image]").attr("content")
+        
+        // URL로 변환
+        let imageURL = URL(string: imageURLString)
+        
+        return URLMetaData(title: title, description: description, thumbnailImage: imageURL)
     }
 }

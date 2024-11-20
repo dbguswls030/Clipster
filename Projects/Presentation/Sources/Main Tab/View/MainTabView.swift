@@ -33,7 +33,7 @@ public struct MainTabView: View {
             }
             .toastView(toast: $viewModel.toast, isPresentSaveURL: $isPresentSaveURL)
             .navigationDestination(isPresented: $isPresentSaveURL) {
-                CreateClipView()
+                SaveURLClipView()
             }
         }
     }

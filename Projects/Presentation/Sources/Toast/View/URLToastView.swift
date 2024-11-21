@@ -10,6 +10,8 @@ import SwiftUI
 struct URLToastView: View {
     var url: URL
     var cancelButtonAction: (() -> Void)
+    var saveButonAction: (() -> Void)
+    
     var body: some View {
         VStack{
             HStack{
@@ -23,10 +25,11 @@ struct URLToastView: View {
             
             HStack{
                 Text(url, format: .url)
-                // TODO: 텍스트가 길어지면?
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                 Spacer()
                 Button {
-                    
+                    saveButonAction()
                 } label: {
                     Text("저장")
                 }
@@ -38,8 +41,9 @@ struct URLToastView: View {
         .background(.purple)
         .cornerRadius(12)
     }
+    
 }
 
 #Preview {
-    URLToastView(url: URL(string: "https://growingsaja.tistory.com/811")!, cancelButtonAction: {})
+    URLToastView(url: URL(string: "https://growingsaja.tistory.com/811")!, cancelButtonAction: {}, saveButonAction: {})
 }

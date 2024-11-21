@@ -21,6 +21,7 @@ let project = Project(
             resources: [],
             dependencies: [
                 .project(target: "Domain", path: .relativeToRoot("Projects/Domain")),
+                .external(name: "SwiftSoup", condition: .none)
             ]
         ),
     ]

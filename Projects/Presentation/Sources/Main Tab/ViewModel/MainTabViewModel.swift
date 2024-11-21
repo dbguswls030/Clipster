@@ -18,7 +18,7 @@ final class MainTabViewModel: ObservableObject{
         bind()
     }
     
-    func bind(){
+    private func bind(){
         $hasPasteBoard
             .compactMap { $0 ? UIPasteboard.general.url : nil }
             .removeDuplicates(by: { $0?.absoluteString == $1?.absoluteString })

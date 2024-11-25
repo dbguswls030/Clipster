@@ -1,37 +1,38 @@
 //
-//  VerifyURLViewModel.swift
+//  SaveURLViewModel.swift
 //  Presentation
 //
-//  Created by 유현진 on 11/20/24.
+//  Created by 유현진 on 11/25/24.
 //
 
 import SwiftUI
 import Combine
 import SwiftSoup
 
-struct URLMetaData{
-    var title: String?
-    var description: String?
-    var thumbnailImage: URL?
-}
-
-class VerifyURLViewModel: ObservableObject{
-    @Published var url: String = ""
-    @Published var metaData: URLMetaData?
+class SaveURLViewModel: ObservableObject{
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(){
+    @Published var url: String = ""
+    @Published var metaData: URLMetaData?
+    @Published var backgroundColor: Color = .clear
+    
+    init(clipBoardURL: String = ""){
+        self.url = clipBoardURL
         bind()
     }
     
     private func bind(){
         $url
             .debounce(for: 1, scheduler: RunLoop.main)
-            .compactMap{URL(string: $0)}
+            .map{URL(string: $0)}
             .removeDuplicates()
             .flatMap{ url in
-                self.fetchMetaData(url: url)
+                if let validURL = url{
+                    return self.fetchMetaData(url: validURL)
+                }else{
+                    return Just(nil).eraseToAnyPublisher()
+                }
             }
             .receive(on: RunLoop.main)
             .sink { [weak self] metaData in
@@ -40,25 +41,43 @@ class VerifyURLViewModel: ObservableObject{
             .store(in: &cancellables)
         
         $metaData
-            .compactMap{$0}
+            .map{ $0 == nil }
+            .sink{ [weak self] isInvalidMetaData in
+                if isInvalidMetaData{
+                    self?.backgroundColor = .red.opacity(0.2)
+                }else{
+                    self?.backgroundColor = .clear
+                }
+            }.store(in: &cancellables)
+        
+        $metaData
             .sink { metaData in
-                print(metaData.title)
-                print(metaData.description)
-                print(metaData.thumbnailImage)
+                print(metaData?.title)
+                print(metaData?.description)
+                print(metaData?.thumbnailImage)
             }
             .store(in: &cancellables)
     }
     
+    
+    
+    
+    
     private func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>{
         URLSession.shared.dataTaskPublisher(for: url)
-            .map(\.data)
+            .tryMap{ data, response -> Data in
+                guard let httpResponse = response as? HTTPURLResponse,
+                      200..<300 ~= httpResponse.statusCode else{
+                    throw URLError(.badServerResponse)
+                }
+                return data
+            }
             .tryMap{ data -> URLMetaData? in
                 let html = String(data: data, encoding: .utf8) ?? ""
                 return try self.parseHTML(html)
             }
             .replaceError(with: nil)
             .eraseToAnyPublisher()
-            
     }
     
     private func parseHTML(_ html: String) throws -> URLMetaData? {
@@ -74,4 +93,5 @@ class VerifyURLViewModel: ObservableObject{
         
         return URLMetaData(title: title, description: description, thumbnailImage: imageURL)
     }
+    
 }

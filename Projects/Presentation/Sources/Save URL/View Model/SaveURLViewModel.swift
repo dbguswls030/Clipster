@@ -13,9 +13,21 @@ class SaveURLViewModel: ObservableObject{
     
     private var cancellables = Set<AnyCancellable>()
     
-    @Published var url: String = ""
+    @Published var url: String = ""{
+        didSet{
+            self.isLoading = true
+        }
+    }
     @Published var metaData: URLMetaData?
-    @Published var backgroundColor: Color = .clear
+    @Published var isInvalidURL: Bool = false
+    @Published var isLoading: Bool = false
+    
+    var URLStateSystemImage: String{
+        isInvalidURL ? "exclamationmark.triangle.fill" : "checkmark.circle.fill"
+    }
+    var URLStateImageForegroundColor: Color{
+        isInvalidURL ? .red : .green
+    }
     
     init(clipBoardURL: String = ""){
         self.url = clipBoardURL
@@ -36,6 +48,7 @@ class SaveURLViewModel: ObservableObject{
             }
             .receive(on: RunLoop.main)
             .sink { [weak self] metaData in
+                self?.isLoading = false
                 self?.metaData = metaData
             }
             .store(in: &cancellables)
@@ -44,9 +57,9 @@ class SaveURLViewModel: ObservableObject{
             .map{ $0 == nil }
             .sink{ [weak self] isInvalidMetaData in
                 if isInvalidMetaData{
-                    self?.backgroundColor = .red.opacity(0.2)
+                    self?.isInvalidURL = true
                 }else{
-                    self?.backgroundColor = .clear
+                    self?.isInvalidURL = false
                 }
             }.store(in: &cancellables)
         
@@ -58,11 +71,7 @@ class SaveURLViewModel: ObservableObject{
             }
             .store(in: &cancellables)
     }
-    
-    
-    
-    
-    
+
     private func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>{
         URLSession.shared.dataTaskPublisher(for: url)
             .tryMap{ data, response -> Data in
@@ -93,5 +102,6 @@ class SaveURLViewModel: ObservableObject{
         
         return URLMetaData(title: title, description: description, thumbnailImage: imageURL)
     }
-    
 }
+
+

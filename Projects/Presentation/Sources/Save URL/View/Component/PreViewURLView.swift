@@ -28,7 +28,7 @@ struct PreViewURLView: View {
                             .bold()
                             .lineLimit(2)
                             .truncationMode(.tail)
-                            
+                        
                         Text(description)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
@@ -37,6 +37,7 @@ struct PreViewURLView: View {
                     }
                 }
             }
+            .transition(.opacity.combined(with: .scale))
         }
     }
 }

@@ -18,7 +18,6 @@ struct SaveURLView: View {
             .navigationTitle("업로드")
             .navigationBarTitleDisplayMode(.inline)
         }
-        
     }
 }
 

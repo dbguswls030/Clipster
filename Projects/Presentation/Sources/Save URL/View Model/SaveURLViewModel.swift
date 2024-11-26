@@ -9,25 +9,18 @@ import SwiftUI
 import Combine
 import SwiftSoup
 
-class SaveURLViewModel: ObservableObject{
+final class SaveURLViewModel: ObservableObject{
     
     private var cancellables = Set<AnyCancellable>()
     
+    @Published var metaData: URLMetaData?
     @Published var url: String = ""{
         didSet{
-            self.isLoading = true
+            isLoading = true
         }
     }
-    @Published var metaData: URLMetaData?
     @Published var isInvalidURL: Bool = false
     @Published var isLoading: Bool = false
-    
-    var URLStateSystemImage: String{
-        isInvalidURL ? "exclamationmark.triangle.fill" : "checkmark.circle.fill"
-    }
-    var URLStateImageForegroundColor: Color{
-        isInvalidURL ? .red : .green
-    }
     
     init(clipBoardURL: String = ""){
         self.url = clipBoardURL
@@ -63,15 +56,18 @@ class SaveURLViewModel: ObservableObject{
                 }
             }.store(in: &cancellables)
         
-        $metaData
-            .sink { metaData in
-                print(metaData?.title)
-                print(metaData?.description)
-                print(metaData?.thumbnailImage)
-            }
-            .store(in: &cancellables)
+//        $metaData
+//            .sink { metaData in
+//                print(metaData?.title)
+//                print(metaData?.description)
+//                print(metaData?.thumbnailImage)
+//            }
+//            .store(in: &cancellables)
     }
+}
 
+// MARK: URL 변환
+extension SaveURLViewModel{
     private func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>{
         URLSession.shared.dataTaskPublisher(for: url)
             .tryMap{ data, response -> Data in
@@ -103,5 +99,3 @@ class SaveURLViewModel: ObservableObject{
         return URLMetaData(title: title, description: description, thumbnailImage: imageURL)
     }
 }
-
-

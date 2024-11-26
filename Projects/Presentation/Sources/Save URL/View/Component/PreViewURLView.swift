@@ -13,6 +13,7 @@ struct PreViewURLView: View {
         if let metaData = metaData{
             HStack(spacing: 12){
                 if let imageURL = metaData.thumbnailImage{
+                    // TODO: 이미지 사이즈 리팩토링
                     AsyncImage(url: imageURL){ image in
                         image.resizable()
                     } placeholder: {

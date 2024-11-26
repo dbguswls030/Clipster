@@ -14,7 +14,11 @@ struct URLSectionView: View {
         Section{
             VStack(spacing: 10){
                 PreViewURLView(metaData: $viewModel.metaData)
-                InputURLView(viewModel: viewModel)
+                    .padding(.bottom, 10)
+                InputURLView(viewModel: InputURLViewModel(
+                    isLoading: $viewModel.isLoading,
+                    url: $viewModel.url,
+                    isInvalidURL: $viewModel.isInvalidURL))
             }
         } header: {
             Text("링크")

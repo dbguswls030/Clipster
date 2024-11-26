@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import Combine
 
 struct InputURLView: View {
-    @ObservedObject var viewModel: SaveURLViewModel
+    @ObservedObject var viewModel: InputURLViewModel
+    
     var body: some View {
         HStack{
             Group{
@@ -27,7 +29,7 @@ struct InputURLView: View {
             
             if !viewModel.url.isEmpty{
                 Button {
-                    viewModel.url = ""
+                    viewModel.clearURL()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.black)
@@ -38,5 +40,5 @@ struct InputURLView: View {
 }
 
 #Preview {
-    InputURLView(viewModel: SaveURLViewModel(clipBoardURL: ""))
+    InputURLView(viewModel: InputURLViewModel(isLoading: .constant(true), url: .constant(""), isInvalidURL: .constant(false)))
 }

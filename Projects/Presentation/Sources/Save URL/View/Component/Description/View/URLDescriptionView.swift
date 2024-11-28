@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct URLDescriptionView: View {
-    @State var description: String = ""
+    @Binding var description: String
+    
     var body: some View {
         VStack(spacing: 15){
             HStack{
@@ -20,7 +21,18 @@ struct URLDescriptionView: View {
                 Spacer()
             }
             GroupBox{
-                TextField("간단한 메모를 작성해 주세요.", text: $description)
+                TextEditor(text: $description)
+                    .overlay(alignment: .topLeading){
+                        Text("간단한 메모를 작성해 주세요.")
+                            .foregroundStyle(description.isEmpty ? .gray : .clear)
+                            .fontWeight(.medium)
+                            .padding([.top, .leading], 8)
+                    }
+                    .frame(height: 100)
+                    .scrollContentBackground(.hidden)
+                    .background(Color(.systemGray6))
+                    .fontWeight(.medium)
+                
             }
             .padding(.horizontal)
         }
@@ -28,5 +40,5 @@ struct URLDescriptionView: View {
 }
 
 #Preview {
-    URLDescriptionView()
+    URLDescriptionView(description: .constant(""))
 }

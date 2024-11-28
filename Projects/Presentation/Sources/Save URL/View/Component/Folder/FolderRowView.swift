@@ -15,12 +15,16 @@ struct FolderRowView: View {
     var body: some View {
         HStack(alignment: .center){
             Text("- " + folder.name)
-                .font(.title3)
+                .font(.headline)
                 .fontWeight(.semibold)
+                
             Spacer()
+            
             if folder.children != nil{
                 Button{
-                    toggleFolder()
+                    withAnimation{
+                        toggleFolder()
+                    }
                 } label: {
                     Image(systemName: expandedFolders.contains(folder.id) ? "chevron.down" : "chevron.right")
                 }
@@ -30,7 +34,7 @@ struct FolderRowView: View {
         .onTapGesture {
             selectedFolderID = folder.id
         }
-        .padding(5)
+        .padding(4)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .background(selectedFolderID == folder.id ? Color.secondary : Color.clear)
         if expandedFolders.contains(folder.id), let subfolders = folder.children {

@@ -12,12 +12,8 @@ struct FolderListView: View {
     
     var body: some View {
         ForEach(viewModel.folderHierachy) { item in
-            FolderRowView(folder: item, selectedFolderID: $viewModel.selection, expandedFolders: $viewModel.expandedFolders)
+            FolderRowView(folder: item, selectedFolderID: $viewModel.selectedFolderId, expandedFolders: $viewModel.expandedFolders)
         }
-//        List(viewModel.$folderHierachy, children: \.children, selection: $viewModel.selection){ item in
-//            FolderRowView(title: item.name, isSelected: viewModel.selection == item.id)
-//        }
-//        .listStyle(.plain)
     }
 }
 

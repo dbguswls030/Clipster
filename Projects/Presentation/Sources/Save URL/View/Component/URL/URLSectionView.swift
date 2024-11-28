@@ -11,7 +11,6 @@ struct URLSectionView: View {
     @ObservedObject var viewModel: SaveURLViewModel
     
     var body: some View {
-        
         VStack(spacing: 20){
             HStack{
                 Text("🔗 링크")

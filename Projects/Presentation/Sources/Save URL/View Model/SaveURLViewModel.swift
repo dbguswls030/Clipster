@@ -25,6 +25,7 @@ final class SaveURLViewModel: ObservableObject{
     @Published var folderHierachy: [FolderModel] = [FolderModel.sampleData1, FolderModel.sampleData2]
     @Published var selectedFolder: UUID?
     @Published var expandedFolders: Set<UUID> = []
+    @Published var description: String = ""
     
     init(clipBoardURL: String = ""){
         self.url = clipBoardURL

@@ -15,7 +15,7 @@ struct SaveURLView: View {
             ScrollView{
                 LazyVStack(alignment: .center, spacing: 30){
                     URLSectionView(viewModel: viewModel)
-                    URLDescriptionView()
+                    URLDescriptionView(description: $viewModel.description)
                     FolderSectionView(viewModel: viewModel)
                 }
             }

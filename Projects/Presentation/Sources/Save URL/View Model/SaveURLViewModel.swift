@@ -22,6 +22,10 @@ final class SaveURLViewModel: ObservableObject{
     @Published var isInvalidURL: Bool = false
     @Published var isLoading: Bool = false
     
+    @Published var folderHierachy: [FolderModel] = [FolderModel.sampleData1, FolderModel.sampleData2]
+    @Published var selectedFolder: UUID?
+    
+    
     init(clipBoardURL: String = ""){
         self.url = clipBoardURL
         bind()

@@ -12,8 +12,12 @@ struct SaveURLView: View {
     
     var body: some View {
         NavigationStack{
-            Form{
-                URLSectionView(viewModel: viewModel)
+            ScrollView{
+                LazyVStack(alignment: .center, spacing: 30){
+                    URLSectionView(viewModel: viewModel)
+                    URLDescriptionView()
+                    FolderSectionView(viewModel: viewModel)
+                }
             }
             .navigationTitle("업로드")
             .navigationBarTitleDisplayMode(.inline)

@@ -13,7 +13,7 @@ final class InputURLViewModel: ObservableObject{
     @Binding internal var isLoading: Bool
     @Binding internal var url: String
     @Binding internal var isInvalidURL: Bool
-    
+
     init(isLoading: Binding<Bool>, url: Binding<String>, isInvalidURL: Binding<Bool>) {
         self._isLoading = isLoading
         self._url = url

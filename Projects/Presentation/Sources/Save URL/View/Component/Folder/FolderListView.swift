@@ -12,7 +12,7 @@ struct FolderListView: View {
     
     var body: some View {
         ForEach(viewModel.folderHierachy) { item in
-            FolderRowView(folder: item, selectedFolderID: $viewModel.selection, expandedFolders: $viewModel.expandedFolder)
+            FolderRowView(folder: item, selectedFolderID: $viewModel.selection, expandedFolders: $viewModel.expandedFolders)
         }
 //        List(viewModel.$folderHierachy, children: \.children, selection: $viewModel.selection){ item in
 //            FolderRowView(title: item.name, isSelected: viewModel.selection == item.id)
@@ -23,6 +23,6 @@ struct FolderListView: View {
 
 #Preview {
     ScrollView{
-        FolderListView(viewModel: FolderViewModel(folderHierachy: .constant([FolderModel.sampleData1]), selection: .constant(nil)))
+        FolderListView(viewModel: FolderViewModel(folderHierachy: .constant([FolderModel.sampleData1]), selection: .constant(nil), expandedFolders: .constant(Set<UUID>())))
     }
 }

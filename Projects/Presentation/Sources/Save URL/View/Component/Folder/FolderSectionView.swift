@@ -21,7 +21,7 @@ struct FolderSectionView: View {
                 Spacer()
             }
             GroupBox{
-                FolderListView(viewModel: FolderViewModel(folderHierachy: $viewModel.folderHierachy, selection: $viewModel.selectedFolder))
+                FolderListView(viewModel: FolderViewModel(folderHierachy: $viewModel.folderHierachy, selection: $viewModel.selectedFolder, expandedFolders: $viewModel.expandedFolders))
             }
             .padding(.horizontal)
         }

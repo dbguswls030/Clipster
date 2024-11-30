@@ -9,25 +9,26 @@ import Foundation
 
 struct FolderModel: Identifiable{
     var id: UUID
-    var name: String
-    var children: [FolderModel]?
+    var title: String
+    var subfolders: [FolderModel]?
+    var URLs: [URLClipModel] = []
     
-    init(id: UUID = UUID(), name: String, children: [FolderModel]) {
+    init(id: UUID = UUID(), title: String, subfolders: [FolderModel]) {
         self.id = id
-        self.name = name
-        self.children = children
+        self.title = title
+        self.subfolders = subfolders
     }
     
     static var sampleData1: FolderModel{
-        return FolderModel(name: "경제", children: [FolderModel(name: "IT", children: [FolderModel(name: "문학", children: [])]),
-                                                  FolderModel(name: "옷", children: []),
-                                                  FolderModel(name: "유튜브", children: [])
+        return FolderModel(title: "경제", subfolders: [FolderModel(title: "IT", subfolders: [FolderModel(title: "문학", subfolders: [])]),
+                                                  FolderModel(title: "옷", subfolders: []),
+                                                  FolderModel(title: "유튜브", subfolders: [])
                                                  ])
     }
     static var sampleData2: FolderModel{
-        return FolderModel(name: "주식", children: [FolderModel(name: "아시아", children: [FolderModel(name: "한국", children: [])]),
-                                                  FolderModel(name: "채권", children: []),
-                                                  FolderModel(name: "계좌", children: [])
+        return FolderModel(title: "주식", subfolders: [FolderModel(title: "아시아", subfolders: [FolderModel(title: "한국", subfolders: [])]),
+                                                  FolderModel(title: "채권", subfolders: []),
+                                                  FolderModel(title: "계좌", subfolders: [])
                                                  ])
     }
 }

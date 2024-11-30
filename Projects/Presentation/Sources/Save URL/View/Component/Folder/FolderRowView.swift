@@ -14,13 +14,13 @@ struct FolderRowView: View {
     
     var body: some View {
         HStack(alignment: .center){
-            Text("- " + folder.name)
+            Text("- " + folder.title)
                 .font(.headline)
                 .fontWeight(.semibold)
                 
             Spacer()
             
-            if folder.children != nil{
+            if folder.subfolders != nil{
                 Button{
                     withAnimation{
                         toggleFolder()
@@ -37,7 +37,7 @@ struct FolderRowView: View {
         .padding(4)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .background(selectedFolderID == folder.id ? Color.secondary : Color.clear)
-        if expandedFolders.contains(folder.id), let subfolders = folder.children {
+        if expandedFolders.contains(folder.id), let subfolders = folder.subfolders {
                         ForEach(subfolders) { subfolder in
                             FolderRowView(folder: subfolder, selectedFolderID: $selectedFolderID, expandedFolders: $expandedFolders)
                                 .padding(.leading, 20) // 하위 폴더는 들여쓰기

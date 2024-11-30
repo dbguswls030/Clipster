@@ -14,7 +14,7 @@ let project = Project(
             name: "Presentation",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.ryuhyeonjinclipster.Presentation",
+            bundleId: "com.clipper.Presentation",
             deploymentTargets: .iOS("16.0"),
             infoPlist: .default,
             sources: ["Sources/**"],

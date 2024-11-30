@@ -14,7 +14,7 @@ let project = Project(
             name: "ShareExtension",
             destinations: .iOS,
             product: .appExtension,
-            bundleId: "com.ryuhyeonjinclipster.ShareExtension",
+            bundleId: "com.clipper.ShareExtension",
             deploymentTargets: .iOS("16.0"),
             infoPlist: .extendingDefault(with: [
                 "NSExtension": [

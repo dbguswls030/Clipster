@@ -1,13 +1,13 @@
 @preconcurrency import ProjectDescription
 
 let project = Project(
-    name: "Clipster",
+    name: "Clipper",
     targets: [
         .target(
-            name: "Clipster",
+            name: "Clipper",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.ryuhyeonjinclipster.app",
+            bundleId: "com.clipper.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: .extendingDefault(
                 with: [

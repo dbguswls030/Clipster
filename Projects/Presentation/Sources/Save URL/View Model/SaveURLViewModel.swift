@@ -69,6 +69,15 @@ final class SaveURLViewModel: ObservableObject{
 //            }
 //            .store(in: &cancellables)
     }
+    
+    func isAbleToSave() -> Bool{
+        !isInvalidURL && selectedFolder != nil && !isLoading && !description.isEmpty && metaData != nil
+    }
+    
+    func makeURLClipModel() {
+        print(URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
+    }
+    
 }
 
 // MARK: URL 변환

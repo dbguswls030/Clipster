@@ -36,20 +36,19 @@ struct SaveURLView: View {
             }
             .toolbar {
                 Button{
-                    // TODO: URL 모델 저장
+                    viewModel.makeURLClipModel()
                 } label: {
                     Text("저장")
                 }
+                .disabled(!viewModel.isAbleToSave())
             }
-            // TODO: 툴바버튼 활성화 조건
         }
-        
     }
 }
 extension UINavigationController: @retroactive ObservableObject, @retroactive UIGestureRecognizerDelegate {
     override open func viewDidLoad() {
         super.viewDidLoad()
-        interactivePopGestureRecognizer?.delegate = self // swipe로 뒤로 가기 활성화
+        interactivePopGestureRecognizer?.delegate = self 
     }
 
     open func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {

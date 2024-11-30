@@ -54,5 +54,5 @@ struct FolderRowView: View {
 }
 
 #Preview {
-    FolderRowView(folder: FolderModel(name: "경제", children: []), selectedFolderID: .constant(UUID()), expandedFolders: .constant([]))
+    FolderRowView(folder: FolderModel(title: "경제", subfolders: []), selectedFolderID: .constant(UUID()), expandedFolders: .constant([]))
 }

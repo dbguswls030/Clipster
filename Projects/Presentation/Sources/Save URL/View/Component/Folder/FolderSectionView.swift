@@ -28,8 +28,8 @@ struct FolderSectionView: View {
     }
 }
 
-#Preview {
-    ScrollView{
-        FolderSectionView(viewModel: SaveURLViewModel(clipBoardURL: ""))
-    }
-}
+//#Preview {
+//    ScrollView{
+//        FolderSectionView(viewModel: SaveURLViewModel(clipBoardURL: ""))
+//    }
+//}

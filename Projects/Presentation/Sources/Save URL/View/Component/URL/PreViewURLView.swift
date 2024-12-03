@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Domain
 
 struct PreViewURLView: View {
     @Binding var metaData: URLMetaData?

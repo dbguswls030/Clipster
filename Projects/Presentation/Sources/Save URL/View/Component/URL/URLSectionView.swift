@@ -33,6 +33,6 @@ struct URLSectionView: View {
     }
 }
 
-#Preview {
-    URLSectionView(viewModel: SaveURLViewModel(clipBoardURL: ""))
-}
+//#Preview {
+//    URLSectionView(viewModel: SaveURLViewModel(clipBoardURL: ""))
+//}

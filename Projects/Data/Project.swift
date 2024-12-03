@@ -21,6 +21,9 @@ let project = Project(
             resources: [],
             dependencies: [
                 .project(target: "Domain", path: .relativeToRoot("Projects/Domain")),
+                .external(name: "FirebaseFirestore"),
+                .external(name: "Moya"),
+                .external(name: "CombineMoya"),
             ]
         ),
     ]

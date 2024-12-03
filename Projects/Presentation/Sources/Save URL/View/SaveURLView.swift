@@ -56,6 +56,6 @@ extension UINavigationController: @retroactive ObservableObject, @retroactive UI
     }
 }
 
-#Preview {
-    SaveURLView(viewModel: SaveURLViewModel(clipBoardURL: ""))
-}
+//#Preview {
+//    SaveURLView(viewModel: SaveURLViewModel(clipBoardURL: ""))
+//}

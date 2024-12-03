@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import Domain
 struct URLClipModel: Identifiable{
     let id: UUID
     let folderId: UUID

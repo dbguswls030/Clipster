@@ -20,6 +20,7 @@ let project = Project(
                 .project(target: "Data", path: .relativeToRoot("Projects/Data")),
                 .project(target: "Presentation", path: .relativeToRoot("Projects/Presentation")),
                 .project(target: "ShareExtension", path: .relativeToRoot("Projects/ShareExtension")),
+                .external(name: "FirebaseFirestore"),
             ]
         ),
 //        .target(

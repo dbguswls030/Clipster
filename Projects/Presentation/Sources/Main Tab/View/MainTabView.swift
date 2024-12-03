@@ -11,8 +11,11 @@ public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = MainTabViewModel()
     @State private var isPresentSaveURL: Bool = false
+    let diContainer: DIContainerProtocol
     
-    public init() {}
+    public init(DIContainer: DIContainerProtocol) {
+        self.diContainer = DIContainer
+    }
     
     public var body: some View {
         NavigationStack {
@@ -33,13 +36,13 @@ public struct MainTabView: View {
             }
             .toastView(toast: $viewModel.toast, isPresentSaveURL: $isPresentSaveURL)
             .navigationDestination(isPresented: $isPresentSaveURL) {
-                SaveURLView(viewModel: SaveURLViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+//                SaveURLView(viewModel: SaveURLViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
             }
             
         }
     }
 }
 
-#Preview {
-    MainTabView()
-}
+//#Preview {
+//    MainTabView()
+//}

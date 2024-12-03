@@ -8,8 +8,10 @@
 import SwiftUI
 import Combine
 import SwiftSoup
+import Domain
 
-final class SaveURLViewModel: ObservableObject{
+
+final public class SaveURLViewModel: ObservableObject{
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -19,6 +21,11 @@ final class SaveURLViewModel: ObservableObject{
             isLoading = true
         }
     }
+    private let useCase: SaveUseCaseProtocol
+    
+    public init(useCase: SaveUseCase){
+        self.useCase = useCase
+    }
     @Published var isInvalidURL: Bool = false
     @Published var isLoading: Bool = false
     
@@ -27,10 +34,10 @@ final class SaveURLViewModel: ObservableObject{
     @Published var expandedFolders: Set<UUID> = []
     @Published var description: String = ""
     
-    init(clipBoardURL: String = ""){
-        self.url = clipBoardURL
-        bind()
-    }
+//    init(clipBoardURL: String = ""){
+//        self.url = clipBoardURL
+//        bind()
+//    }
     
     private func bind(){
         $url

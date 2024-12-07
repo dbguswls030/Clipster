@@ -1,5 +1,6 @@
 # Firebase Configuration
 GoogleService-Info.plist
+config.plist
 
 ### macOS ###
 # General

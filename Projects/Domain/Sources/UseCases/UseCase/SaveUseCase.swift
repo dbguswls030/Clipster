@@ -17,4 +17,7 @@ final public class SaveUseCase: SaveUseCaseProtocol{
     public func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never> {
         repository.fetchMetaData(url: url)
     }
+    public func makeFolder() -> AnyPublisher<Void, Never>{
+        repository.makeFolder()
+    }
 }

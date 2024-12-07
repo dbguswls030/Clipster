@@ -10,4 +10,5 @@ import Combine
 
 public protocol SaveUseCaseProtocol{
     func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>
+    func makeFolder() -> AnyPublisher<Void, Never>
 }

@@ -13,6 +13,7 @@ final class MainTabViewModel: ObservableObject{
     @Published var hasPasteBoard: Bool = false
     @Published var pastedURL: URL? = nil
     @Published var toast: ToastModel? = nil
+    @Published var isPresentSaveURL: Bool = false
     
     init(){
         bind()

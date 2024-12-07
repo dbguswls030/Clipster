@@ -17,8 +17,8 @@ struct FolderListView: View {
     }
 }
 
-#Preview {
-    ScrollView{
-        FolderListView(viewModel: FolderViewModel(folderHierachy: .constant([FolderModel.sampleData1]), selection: .constant(nil), expandedFolders: .constant(Set<UUID>())))
-    }
-}
+//#Preview {
+//    ScrollView{
+//        FolderListView(viewModel: FolderViewModel(folderHierachy: .constant([FolderModel.sampleData1]), selection: .constant(nil), expandedFolders: .constant(Set<UUID>())))
+//    }
+//}

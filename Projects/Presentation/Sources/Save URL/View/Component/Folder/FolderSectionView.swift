@@ -19,6 +19,17 @@ struct FolderSectionView: View {
                     .foregroundStyle(.black)
                     .padding(.leading)
                 Spacer()
+                Button{
+                    viewModel.makeFolder()
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .buttonStyle(.bordered)
+                .tint(.gray)
+                .buttonBorderShape(.capsule)
+                .padding(.trailing)
+                
+                
             }
             GroupBox{
                 FolderListView(viewModel: FolderViewModel(folderHierachy: $viewModel.folderHierachy, selection: $viewModel.selectedFolder, expandedFolders: $viewModel.expandedFolders))
@@ -30,6 +41,6 @@ struct FolderSectionView: View {
 
 //#Preview {
 //    ScrollView{
-//        FolderSectionView(viewModel: SaveURLViewModel(clipBoardURL: ""))
+//        FolderSectionView(viewModel: SaveURLViewModel(useCase: ))
 //    }
 //}

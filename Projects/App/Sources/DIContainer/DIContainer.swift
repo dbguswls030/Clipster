@@ -10,11 +10,20 @@ import Domain
 import Presentation
 import Data
 
-final public class DIContainer: DIContainerProtocol{
+final public class DIContainer{
     
     public init(){ }
     
-    public func makeSaveDIContainer() -> SaveURLViewModel{
+}
+
+extension DIContainer: SaveDIContainerProtocol{
+    public func makeSaveDIContainer(clipBoardURL: String) -> SaveURLViewModel{
+        let repository = SaveRepository()
+        let useCase = SaveUseCase(repository: repository)
+        return SaveURLViewModel(useCase: useCase, clipBoradURL: clipBoardURL)
+    }
+    
+    public func makeSaveDIContainer() -> SaveURLViewModel {
         let repository = SaveRepository()
         let useCase = SaveUseCase(repository: repository)
         return SaveURLViewModel(useCase: useCase)

@@ -10,4 +10,5 @@ import Combine
 
 public protocol SaveRepositoryProtocol{
     func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>
+    func makeFolder() -> AnyPublisher<Void, Never>
 }

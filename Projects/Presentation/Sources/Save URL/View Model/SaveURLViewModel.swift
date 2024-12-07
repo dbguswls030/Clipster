@@ -23,21 +23,24 @@ final public class SaveURLViewModel: ObservableObject{
     }
     private let useCase: SaveUseCaseProtocol
     
+    public init(useCase: SaveUseCaseProtocol, clipBoradURL: String? = ""){
+        self.useCase = useCase
+        if let url = clipBoradURL{ self.url = url }
+        bind()
+    }
+    
     public init(useCase: SaveUseCase){
         self.useCase = useCase
+        bind()
     }
+    
     @Published var isInvalidURL: Bool = false
     @Published var isLoading: Bool = false
     
     @Published var folderHierachy: [FolderModel] = [FolderModel.sampleData1, FolderModel.sampleData2]
-    @Published var selectedFolder: UUID?
-    @Published var expandedFolders: Set<UUID> = []
+    @Published var selectedFolder: String?
+    @Published var expandedFolders: Set<String> = []
     @Published var description: String = ""
-    
-//    init(clipBoardURL: String = ""){
-//        self.url = clipBoardURL
-//        bind()
-//    }
     
     private func bind(){
         $url
@@ -46,7 +49,7 @@ final public class SaveURLViewModel: ObservableObject{
             .removeDuplicates()
             .flatMap{ url in
                 if let validURL = url{
-                    return self.fetchMetaData(url: validURL)
+                    return self.useCase.fetchMetaData(url: validURL)
                 }else{
                     return Just(nil).eraseToAnyPublisher()
                 }
@@ -85,38 +88,11 @@ final public class SaveURLViewModel: ObservableObject{
         print(URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
     }
     
-}
-
-// MARK: URL 변환
-extension SaveURLViewModel{
-    private func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>{
-        URLSession.shared.dataTaskPublisher(for: url)
-            .tryMap{ data, response -> Data in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      200..<300 ~= httpResponse.statusCode else{
-                    throw URLError(.badServerResponse)
-                }
-                return data
+    func makeFolder(){
+        useCase.makeFolder()
+            .sink { _ in
+                print("success makeFolder")
             }
-            .tryMap{ data -> URLMetaData? in
-                let html = String(data: data, encoding: .utf8) ?? ""
-                return try self.parseHTML(html)
-            }
-            .replaceError(with: nil)
-            .eraseToAnyPublisher()
-    }
-    
-    private func parseHTML(_ html: String) throws -> URLMetaData? {
-        let document = try SwiftSoup.parse(html)
-        
-        // Open Graph 메타데이터 추출
-        let title = try document.select("meta[property=og:title]").attr("content")
-        let description = try document.select("meta[property=og:description]").attr("content")
-        let imageURLString = try document.select("meta[property=og:image]").attr("content")
-        
-        // URL로 변환
-        let imageURL = URL(string: imageURLString)
-        
-        return URLMetaData(title: title, description: description, thumbnailImage: imageURL)
+            .store(in: &cancellables)
     }
 }

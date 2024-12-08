@@ -31,10 +31,12 @@ struct FolderSectionView: View {
                 
                 
             }
-            GroupBox{
-                FolderListView(viewModel: FolderViewModel(folderHierachy: $viewModel.folderHierachy, selection: $viewModel.selectedFolder, expandedFolders: $viewModel.expandedFolders))
-            }
-            .padding(.horizontal)
+            if !viewModel.folderHierachy.isEmpty{
+                GroupBox{
+                    FolderListView(viewModel: FolderViewModel(folderHierachy: $viewModel.folderHierachy, selection: $viewModel.selectedFolder, expandedFolders: $viewModel.expandedFolders))
+                }
+                .padding(.horizontal)
+            }            
         }
     }
 }

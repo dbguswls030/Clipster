@@ -1,31 +1,33 @@
 //
-//  FolderModelDTO.swift
+//  TestFolderModelDTO.swift
 //  Data
 //
-//  Created by 유현진 on 12/7/24.
+//  Created by 유현진 on 12/8/24.
 //
 
 import Foundation
-import Domain
 
 struct FolderModelDTO: Codable{
-    let fields: Fields
-
-    init(id: String = UUID().uuidString, title: String, subfolders: [String], URLs: [String]) {
-        self.fields = Fields(
-            id: StringValue(value: id),
-            title: StringValue(value: title),
-            subfolders: ArrayValue(values: subfolders.map { StringValue(value: $0) }),
-            URLs: ArrayValue(values: URLs.map { StringValue(value: $0) })
-        )
+    let id: StringValue
+    let title: StringValue
+    let subfolders: ArrayValue<StringValue>
+    let URLs: ArrayValue<StringValue>
+    
+    enum RootKey: String, CodingKey {
+        case fields
     }
-}
-
-extension FolderModelDTO{
-    struct Fields: Codable {
-        let id: StringValue
-        let title: StringValue
-        let subfolders: ArrayValue<StringValue>
-        let URLs: ArrayValue<StringValue>
+    
+    enum codingKey: String, CodingKey {
+        case id
+        case title
+        case subfolders
+        case URLs
+    }
+    
+    init(id: String = UUID().uuidString, title: String, subfolders: [String], URLs: [String]) {
+        self.id = StringValue(value: id)
+        self.title = StringValue(value: title)
+        self.subfolders = ArrayValue(values: subfolders.map { StringValue(value: $0) })
+        self.URLs = ArrayValue(values: URLs.map { StringValue(value: $0) })
     }
 }

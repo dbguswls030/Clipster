@@ -48,10 +48,17 @@ extension SaveRepository{
                     
                 }
                 .catch { error in
-                    print("Error: \(error)")
+                    switch error{
+                    case .statusCode(let response):
+                        print("Error Status Code: \(response.statusCode)")
+                        if let message = String(data: response.data, encoding: .utf8) {
+                            print("Error Message: \(message)")
+                        }
+                    default:
+                        print("Unknown Error: \(error.localizedDescription)")
+                    }
                     return Just(()).eraseToAnyPublisher()
                 }
-                .replaceError(with: ())
                 .eraseToAnyPublisher()
     }
     
@@ -61,7 +68,19 @@ extension SaveRepository{
                 let responseData = try JSONDecoder().decode(Documents<[FolderModelDTO]>.self, from: response.data)
                 return responseData.documents.map{$0.toEntity()}
             }
-            .replaceError(with: [])
+            .catch { error -> AnyPublisher<[FolderModel], Never> in
+                guard let error = error as? MoyaError else { return Just([]).eraseToAnyPublisher() }
+                switch error{
+                case .statusCode(let response):
+                    print("Error Status Code: \(response.statusCode)")
+                    if let message = String(data: response.data, encoding: .utf8) {
+                        print("Error Message: \(message)")
+                    }
+                default:
+                    print("Unknown Error: \(error.localizedDescription)")
+                }
+                return Just([]).eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
 }

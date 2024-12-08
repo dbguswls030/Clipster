@@ -20,21 +20,13 @@ struct StringValue: Codable{
 }
 
 struct ArrayValue<T: Codable>: Codable {
-    let arrayValue: ArrayWrapper<T>
+    let arrayValue: [String: [T]]
 
     init(values: [T]) {
-        self.arrayValue = ArrayWrapper(values: values)
+        self.arrayValue = ["values" : values]
     }
 
     enum CodingKeys: String, CodingKey {
         case arrayValue
-    }
-}
-
-struct ArrayWrapper<T: Codable>: Codable {
-    let values: [T]
-
-    enum CodingKeys: String, CodingKey {
-        case values
     }
 }

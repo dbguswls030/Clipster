@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Domain
 
 struct FolderModelDTO: Codable{
     let id: StringValue
@@ -17,7 +18,7 @@ struct FolderModelDTO: Codable{
         case fields
     }
     
-    enum codingKey: String, CodingKey {
+    enum FieldKeys: String, CodingKey {
         case id
         case title
         case subfolders
@@ -29,5 +30,19 @@ struct FolderModelDTO: Codable{
         self.title = StringValue(value: title)
         self.subfolders = ArrayValue(values: subfolders.map { StringValue(value: $0) })
         self.URLs = ArrayValue(values: URLs.map { StringValue(value: $0) })
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: RootKey.self)
+        let fieldContainer = try container.nestedContainer(keyedBy: FieldKeys.self, forKey: .fields)
+        self.id = try fieldContainer.decode(StringValue.self, forKey: .id)
+        self.title = try fieldContainer.decode(StringValue.self, forKey: .title)
+        self.subfolders = try fieldContainer.decode(ArrayValue<StringValue>.self, forKey: .subfolders)
+        self.URLs = try fieldContainer.decode(ArrayValue<StringValue>.self, forKey: .URLs)
+    }
+    
+    func toEntity() -> FolderModel{
+        return FolderModel(id: id.value,
+                           title: title.value)
     }
 }

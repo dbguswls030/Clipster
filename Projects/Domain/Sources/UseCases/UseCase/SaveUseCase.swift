@@ -20,4 +20,8 @@ final public class SaveUseCase: SaveUseCaseProtocol{
     public func makeFolder() -> AnyPublisher<Void, Never>{
         repository.makeFolder()
     }
+    
+    public func fetchFolder() -> AnyPublisher<[FolderModel], Never> {
+        repository.fetchFolder()
+    }
 }

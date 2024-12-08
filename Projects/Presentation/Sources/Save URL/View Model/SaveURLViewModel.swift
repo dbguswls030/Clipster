@@ -37,7 +37,7 @@ final public class SaveURLViewModel: ObservableObject{
     @Published var isInvalidURL: Bool = false
     @Published var isLoading: Bool = false
     
-    @Published var folderHierachy: [FolderModel] = [FolderModel.sampleData1, FolderModel.sampleData2]
+    @Published var folderHierachy: [FolderModel] = []
     @Published var selectedFolder: String?
     @Published var expandedFolders: Set<String> = []
     @Published var description: String = ""
@@ -78,6 +78,11 @@ final public class SaveURLViewModel: ObservableObject{
 //                print(metaData?.thumbnailImage)
 //            }
 //            .store(in: &cancellables)
+        useCase.fetchFolder()
+            .sink{ [weak self] fetchModel in
+                self?.folderHierachy = fetchModel
+            }
+            .store(in: &cancellables)
     }
     
     func isAbleToSave() -> Bool{

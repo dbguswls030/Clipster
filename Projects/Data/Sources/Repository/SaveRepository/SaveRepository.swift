@@ -51,21 +51,17 @@ extension SaveRepository{
                     print("Error: \(error)")
                     return Just(()).eraseToAnyPublisher()
                 }
-                .print()
                 .replaceError(with: ())
                 .eraseToAnyPublisher()
     }
     
-//    public func fetchFolder() -> AnyPublisher<[FolderModel], Never> {
-//        return service.requestPublisher(.fetchFolder)
-//            .tryMap{ response -> [FolderModel] in
-//                let responseData = try JSONDecoder().decode(FolderModelDTO.self, from: response.data)
-//                return responseData
-//            }
-//            .catch { error in
-//                print("Error: \(error)")
-//                return Just([]).eraseToAnyPublisher()
-//            }
-//            .eraseToAnyPublisher()
-//    }
+    public func fetchFolder() -> AnyPublisher<[FolderModel], Never> {
+        return service.requestPublisher(.fetchFolder)
+            .tryMap{ response -> [FolderModel] in
+                let responseData = try JSONDecoder().decode(Documents<[FolderModelDTO]>.self, from: response.data)
+                return responseData.documents.map{$0.toEntity()}
+            }
+            .replaceError(with: [])
+            .eraseToAnyPublisher()
+    }
 }

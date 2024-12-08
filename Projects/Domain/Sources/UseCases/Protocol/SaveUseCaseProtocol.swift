@@ -9,6 +9,11 @@ import Foundation
 import Combine
 
 public protocol SaveUseCaseProtocol{
+    // MARK: URL
     func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>
+    
+    // MARK: Folder
     func makeFolder() -> AnyPublisher<Void, Never>
+    func fetchFolder() -> AnyPublisher<[FolderModel], Never>
 }
+

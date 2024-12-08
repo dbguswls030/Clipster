@@ -11,23 +11,6 @@ import Domain
 struct FolderModelDTO: Codable{
     let fields: Fields
 
-    struct Fields: Codable {
-        let id: StringValue
-        let title: StringValue
-        let subfolders: ArrayValue<StringValue>
-        let URLs: ArrayValue<StringValue>
-        
-        enum FieldKeys: String, CodingKey{
-            case id
-            case title
-            case subfolders
-            case URLs
-        }
-    }
-    enum RootKey: String, CodingKey {
-        case fields
-    }
-    
     init(id: String = UUID().uuidString, title: String, subfolders: [String], URLs: [String]) {
         self.fields = Fields(
             id: StringValue(value: id),
@@ -35,5 +18,14 @@ struct FolderModelDTO: Codable{
             subfolders: ArrayValue(values: subfolders.map { StringValue(value: $0) }),
             URLs: ArrayValue(values: URLs.map { StringValue(value: $0) })
         )
+    }
+}
+
+extension FolderModelDTO{
+    struct Fields: Codable {
+        let id: StringValue
+        let title: StringValue
+        let subfolders: ArrayValue<StringValue>
+        let URLs: ArrayValue<StringValue>
     }
 }

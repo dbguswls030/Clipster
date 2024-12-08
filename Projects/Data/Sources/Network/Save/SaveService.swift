@@ -12,6 +12,7 @@ import Domain
 enum SaveService {
     case fetchURLMetadata(url: URL)
     case makeFolder(FolderModelDTO)
+    case fetchFolder
 }
 
 extension SaveService: TargetType{
@@ -26,21 +27,19 @@ extension SaveService: TargetType{
         }
     }
     
-//    public var accessToken: String{
-//        return KeyChainManager.read(key: .runningHiAccessTokenkey)!
-//    }
-    
     public var path: String{
         switch self{
         case .fetchURLMetadata: ""
-        case .makeFolder(let requestModel): "/projects/\(projectId)/databases/(default)/documents/folders"
+        case .makeFolder(let requestModel): "/projects/\(projectId)/databases/(default)/documents/folders/\(requestModel.fields.id.value)"
+        case .fetchFolder: "/projects/\(projectId)/databases/(default)/documents/folders"
         }
     }
     
     public var method: Moya.Method{
         switch self{
         case .fetchURLMetadata: .get
-        case .makeFolder: .post
+        case .makeFolder: .patch
+        case .fetchFolder: .get
         }
     }
     
@@ -48,13 +47,14 @@ extension SaveService: TargetType{
         switch self{
         case .fetchURLMetadata: .requestPlain
         case .makeFolder(let requestModel): .requestJSONEncodable(requestModel)
+        case .fetchFolder: .requestPlain
         }
     }
     
     public var headers: [String : String]?{
         switch self{
         case .fetchURLMetadata: nil
-        case .makeFolder: ["Content-Type": "application/json"]
+        default: ["Content-Type": "application/json"]
         }
     }
 }

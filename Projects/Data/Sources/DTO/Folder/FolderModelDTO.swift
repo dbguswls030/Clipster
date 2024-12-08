@@ -1,5 +1,5 @@
 //
-//  TestFolderModelDTO.swift
+//  FolderModelDTO.swift
 //  Data
 //
 //  Created by 유현진 on 12/8/24.

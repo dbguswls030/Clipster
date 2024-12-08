@@ -12,19 +12,23 @@ import Moya
 import CombineMoya
 
 final public class SaveRepository: SaveRepositoryProtocol{
-   
     
     private let service = MoyaProvider<SaveService>()
     
     private var cancellable = Set<AnyCancellable>()
     
-//   public init() {
-//       let plugin = NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
-//       service = MoyaProvider<SaveService>(plugins: [plugin])
-//   }
+//    private let service: MoyaProvider<SaveService>
+//    
+//    public init() {
+//        let plugin = NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
+//        service = MoyaProvider<SaveService>(plugins: [plugin])
+//    }
     
     public init() {}
-    
+
+}
+extension SaveRepository{
+    // MARK: URL
     public func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never> {
         return service.requestPublisher(.fetchURLMetadata(url: url))
             .tryMap{ response in
@@ -34,19 +38,34 @@ final public class SaveRepository: SaveRepositoryProtocol{
             .replaceError(with: nil)
             .eraseToAnyPublisher()
     }
-    
+}
+extension SaveRepository{
+    // MARK: Folder
     public func makeFolder() -> AnyPublisher<Void, Never>{
-        return service.requestPublisher(.makeFolder(FolderModelDTO(title: "무제", subfolders: ["ㅁㄴㅇ"], URLs: ["ㅁㄴㅇ"])))
+        let newModel = FolderModelDTO(title: "무제", subfolders: [], URLs: [])
+        return service.requestPublisher(.makeFolder(documentId: newModel.id.value, model: newModel))
                 .map { response in
                     
                 }
                 .catch { error in
-                    // 오류가 발생하면 출력
                     print("Error: \(error)")
-                    return Just(()).eraseToAnyPublisher() // 오류 처리 후 기본값 반환
+                    return Just(()).eraseToAnyPublisher()
                 }
-                .replaceError(with: ())
                 .print()
+                .replaceError(with: ())
                 .eraseToAnyPublisher()
     }
+    
+//    public func fetchFolder() -> AnyPublisher<[FolderModel], Never> {
+//        return service.requestPublisher(.fetchFolder)
+//            .tryMap{ response -> [FolderModel] in
+//                let responseData = try JSONDecoder().decode(FolderModelDTO.self, from: response.data)
+//                return responseData
+//            }
+//            .catch { error in
+//                print("Error: \(error)")
+//                return Just([]).eraseToAnyPublisher()
+//            }
+//            .eraseToAnyPublisher()
+//    }
 }

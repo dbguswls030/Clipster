@@ -11,7 +11,7 @@ import Domain
 
 enum SaveService {
     case fetchURLMetadata(url: URL)
-    case makeFolder(FolderModelDTO)
+    case makeFolder(documentId: String, model: FolderModelDTO)
     case fetchFolder
 }
 
@@ -30,7 +30,7 @@ extension SaveService: TargetType{
     public var path: String{
         switch self{
         case .fetchURLMetadata: ""
-        case .makeFolder(let requestModel): "/projects/\(projectId)/databases/(default)/documents/folders/\(requestModel.fields.id.value)"
+        case .makeFolder(let documentId, _): "/projects/\(projectId)/databases/(default)/documents/folders/\(documentId)"
         case .fetchFolder: "/projects/\(projectId)/databases/(default)/documents/folders"
         }
     }
@@ -46,7 +46,7 @@ extension SaveService: TargetType{
     public var task: Task{
         switch self{
         case .fetchURLMetadata: .requestPlain
-        case .makeFolder(let requestModel): .requestJSONEncodable(requestModel)
+        case .makeFolder(_, let model): .requestJSONEncodable(["fields" : model])
         case .fetchFolder: .requestPlain
         }
     }

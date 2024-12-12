@@ -22,6 +22,6 @@ struct URLMetaDataResponseDTO: Decodable{
         // URL로 변환
         let imageURL = URL(string: imageURLString)
         
-        return URLMetaData(title: title, description: description, thumbnailImage: imageURL)
+        return URLMetaData(title: title, description: description, thumbnailImageURL: imageURL)
     }
 }

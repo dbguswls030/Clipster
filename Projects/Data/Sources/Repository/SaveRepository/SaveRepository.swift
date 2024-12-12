@@ -14,17 +14,16 @@ import CombineMoya
 final public class SaveRepository: SaveRepositoryProtocol{
     
     private let service = MoyaProvider<SaveService>()
-    
+    public init() {}
     private var cancellable = Set<AnyCancellable>()
     
 //    private let service: MoyaProvider<SaveService>
-//    
 //    public init() {
 //        let plugin = NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
 //        service = MoyaProvider<SaveService>(plugins: [plugin])
 //    }
     
-    public init() {}
+
 
 }
 extension SaveRepository{
@@ -38,6 +37,28 @@ extension SaveRepository{
             .replaceError(with: nil)
             .eraseToAnyPublisher()
     }
+    
+    public func makeURLClip(model: URLClipModel) -> AnyPublisher<String?, Never> {
+        let newModel = URLClipModelDTO(model: model)
+        return service.requestPublisher(.makeURLClip(model: newModel))
+            .map{ _ in
+                return newModel.id.value
+            }
+            .catch { error -> AnyPublisher<String?, Never> in
+                switch error{
+                case .statusCode(let response):
+                    print("Error Status Code: \(response.statusCode)")
+                    if let message = String(data: response.data, encoding: .utf8) {
+                        print("Error Message: \(message)")
+                    }
+                default:
+                    print("Unknown Error: \(error.localizedDescription)")
+                }
+                return Just(nil).eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
 }
 extension SaveRepository{
     // MARK: Folder
@@ -81,6 +102,35 @@ extension SaveRepository{
                 }
                 return Just([]).eraseToAnyPublisher()
             }
+            .eraseToAnyPublisher()
+    }
+    
+    public func saveURLClip(folderId: String, URLClipId: String) -> AnyPublisher<Bool, Never> {
+        return service.requestPublisher(.saveURLClip(folderId: folderId, URLClipId: URLClipId))
+            .tryMap { response in
+                if response.statusCode == 200{
+                    print("success")
+                    return true
+                }else{
+                    print(response.statusCode, "fail")
+                    print(String(data: response.data, encoding: .utf8))
+                    return false
+                }
+            }
+            .catch { error -> AnyPublisher<Bool, Never> in
+                guard let error = error as? MoyaError else { return Just(false).eraseToAnyPublisher() }
+                switch error{
+                case .statusCode(let response):
+                    print("Error Status Code: \(response.statusCode)")
+                    if let message = String(data: response.data, encoding: .utf8) {
+                        print("Error Message: \(message)")
+                    }
+                default:
+                    print("Unknown Error: \(error.localizedDescription)")
+                }
+                return Just(false).eraseToAnyPublisher()
+            }
+            .print()
             .eraseToAnyPublisher()
     }
 }

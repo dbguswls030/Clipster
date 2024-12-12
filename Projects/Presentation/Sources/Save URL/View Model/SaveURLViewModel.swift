@@ -14,13 +14,6 @@ import Domain
 final public class SaveURLViewModel: ObservableObject{
     
     private var cancellables = Set<AnyCancellable>()
-    
-    @Published var metaData: URLMetaData?
-    @Published var url: String = ""{
-        didSet{
-            isLoading = true
-        }
-    }
     private let useCase: SaveUseCaseProtocol
     
     public init(useCase: SaveUseCaseProtocol, clipBoradURL: String? = ""){
@@ -34,6 +27,13 @@ final public class SaveURLViewModel: ObservableObject{
         bind()
     }
     
+    @Published var metaData: URLMetaData?
+    @Published var url: String = ""{
+        didSet{
+            isLoading = true
+        }
+    }
+    
     @Published var isInvalidURL: Bool = false
     @Published var isLoading: Bool = false
     
@@ -41,6 +41,10 @@ final public class SaveURLViewModel: ObservableObject{
     @Published var selectedFolder: String?
     @Published var expandedFolders: Set<String> = []
     @Published var description: String = ""
+    
+    // 저장 완료 시 뒤로가기
+    // 저장 중 로딩.... 로딩 중에는 저장 버튼 비활성화
+    
     
     private func bind(){
         $url
@@ -71,13 +75,6 @@ final public class SaveURLViewModel: ObservableObject{
                 }
             }.store(in: &cancellables)
         
-//        $metaData
-//            .sink { metaData in
-//                print(metaData?.title)
-//                print(metaData?.description)
-//                print(metaData?.thumbnailImage)
-//            }
-//            .store(in: &cancellables)
         useCase.fetchFolder()
             .sink{ [weak self] fetchModel in
                 self?.folderHierachy = fetchModel
@@ -90,7 +87,16 @@ final public class SaveURLViewModel: ObservableObject{
     }
     
     func makeURLClipModel() {
-        print(URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
+        useCase.makeURLClip(model: URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
+            .compactMap{$0}
+            .flatMap{ [weak self] URLClipId in
+                guard let self = self else { return Just(false).eraseToAnyPublisher()}
+                return self.useCase.saveURLClip(folderId: selectedFolder!, URLClipId: URLClipId)
+            }
+            .sink{ bool in
+                print(bool)
+            }
+            .store(in: &cancellables)
     }
     
     func makeFolder(){

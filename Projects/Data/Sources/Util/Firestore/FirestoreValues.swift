@@ -19,6 +19,14 @@ struct StringValue: Codable{
     }
 }
 
+struct TimeStampValue: Codable {
+    let value: String
+    
+    private enum CodingKeys: String, CodingKey {
+        case value = "timestampValue"
+    }
+}
+
 struct ArrayValue<T: Codable>: Codable {
     let arrayValue: [String: [T]]
 
@@ -35,6 +43,24 @@ struct ArrayValue<T: Codable>: Codable {
         self.arrayValue = try container.decode([String: [T]].self, forKey: .arrayValue)
     }
 }
+
+struct MapValue: Codable {
+    let value: FieldValue
+    
+    private enum CodingKeys: String, CodingKey {
+        case value = "mapValue"
+    }
+    
+    init(value: FieldValue) {
+        self.value = value
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.value = try container.decode(FieldValue.self, forKey: .value)
+    }
+}
+
 struct FieldValue: Codable {
     var fields: [String: StringValue]
     

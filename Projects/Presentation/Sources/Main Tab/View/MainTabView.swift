@@ -37,6 +37,12 @@ public struct MainTabView: View {
             .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
             .navigationDestination(isPresented: $viewModel.isPresentSaveURL) {
                 SaveURLView(viewModel: DIContainer.makeSaveDIContainer(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+                    .onAppear{
+                        viewModel.isShowingSaveURLView = true
+                    }
+                    .onDisappear{
+                        viewModel.isShowingSaveURLView = false
+                    }
             }
         }
     }

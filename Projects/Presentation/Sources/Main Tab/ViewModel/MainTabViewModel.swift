@@ -14,6 +14,7 @@ final class MainTabViewModel: ObservableObject{
     @Published var pastedURL: URL? = nil
     @Published var toast: ToastModel? = nil
     @Published var isPresentSaveURL: Bool = false
+    var isShowingSaveURLView: Bool = false
     
     init(){
         bind()
@@ -34,7 +35,8 @@ final class MainTabViewModel: ObservableObject{
     
     func handleScenePhaseChange(_ phase: ScenePhase){
         DispatchQueue.main.async { [weak self] in
-            self?.hasPasteBoard = phase == .active && UIPasteboard.general.hasURLs
+            guard let self = self else { return }
+            self.hasPasteBoard = phase == .active && UIPasteboard.general.hasURLs && !self.isShowingSaveURLView
         }
     }
 }

@@ -28,8 +28,7 @@ struct FolderSectionView: View {
                 .tint(.gray)
                 .buttonBorderShape(.capsule)
                 .padding(.trailing)
-                
-                
+                .disabled(viewModel.isLoadingDuringMakeFolder)
             }
             if !viewModel.folderHierachy.isEmpty{
                 GroupBox{

@@ -24,7 +24,7 @@ struct URLSectionView: View {
                 PreViewURLView(metaData: $viewModel.metaData)
                     .padding(.bottom, 10)
                 InputURLView(viewModel: InputURLViewModel(
-                    isLoading: $viewModel.isLoading,
+                    isLoading: $viewModel.isLoadingForTextField,
                     url: $viewModel.url,
                     isInvalidURL: $viewModel.isInvalidURL))   
             }

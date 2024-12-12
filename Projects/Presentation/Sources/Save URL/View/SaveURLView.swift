@@ -42,6 +42,17 @@ struct SaveURLView: View {
                 }
                 .disabled(!viewModel.isAbleToSave())
             }
+            .onChange(of: viewModel.isSaved) {
+                if $0{ dismiss() }
+            }
+        }
+        .hideKeyboardOnTap()
+    }
+}
+extension View {
+    func hideKeyboardOnTap() -> some View {
+        self.onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
     }
 }

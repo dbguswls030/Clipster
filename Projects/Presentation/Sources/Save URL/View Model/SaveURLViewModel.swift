@@ -30,21 +30,23 @@ final public class SaveURLViewModel: ObservableObject{
     @Published var metaData: URLMetaData?
     @Published var url: String = ""{
         didSet{
-            isLoading = true
+            isLoadingForTextField = true
         }
     }
     
     @Published var isInvalidURL: Bool = false
-    @Published var isLoading: Bool = false
+    @Published var isLoadingForTextField: Bool = false
     
     @Published var folderHierachy: [FolderModel] = []
     @Published var selectedFolder: String?
     @Published var expandedFolders: Set<String> = []
     @Published var description: String = ""
     
-    // 저장 완료 시 뒤로가기
-    // 저장 중 로딩.... 로딩 중에는 저장 버튼 비활성화
     
+    
+    @Published var isSaved: Bool = false
+    @Published var isLoadingDuringSave: Bool = false
+    @Published var isLoadingDuringMakeFolder: Bool = false
     
     private func bind(){
         $url
@@ -60,7 +62,7 @@ final public class SaveURLViewModel: ObservableObject{
             }
             .receive(on: RunLoop.main)
             .sink { [weak self] metaData in
-                self?.isLoading = false
+                self?.isLoadingForTextField = false
                 self?.metaData = metaData
             }
             .store(in: &cancellables)
@@ -83,18 +85,19 @@ final public class SaveURLViewModel: ObservableObject{
     }
     
     func isAbleToSave() -> Bool{
-        !isInvalidURL && selectedFolder != nil && !isLoading && !description.isEmpty && metaData != nil
+        !isInvalidURL && selectedFolder != nil && !isLoadingForTextField && !description.isEmpty && metaData != nil && !isLoadingDuringSave
     }
     
     func makeURLClipModel() {
+        isLoadingDuringSave = true
         useCase.makeURLClip(model: URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
-            .compactMap{$0}
             .flatMap{ [weak self] URLClipId in
-                guard let self = self else { return Just(false).eraseToAnyPublisher()}
+                guard let self = self, let URLClipId = URLClipId else { return Just(false).eraseToAnyPublisher()}
                 return self.useCase.saveURLClip(folderId: selectedFolder!, URLClipId: URLClipId)
             }
-            .sink{ bool in
-                print(bool)
+            .sink{ [weak self] bool in
+                self?.isSaved = bool
+                self?.isLoadingDuringSave = false
             }
             .store(in: &cancellables)
     }

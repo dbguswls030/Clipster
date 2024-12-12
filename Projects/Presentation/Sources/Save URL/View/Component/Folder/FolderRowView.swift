@@ -6,27 +6,33 @@
 //
 
 import SwiftUI
+import Domain
 
 struct FolderRowView: View {
     var folder: FolderModel
-    @Binding var selectedFolderID: UUID?
-    @Binding var expandedFolders: Set<UUID>
+    @Binding var selectedFolderID: String?
+    @Binding var expandedFolders: Set<String>
     
     var body: some View {
         HStack(alignment: .center){
-            Text("- " + folder.title)
+            Text("-")
                 .font(.headline)
                 .fontWeight(.semibold)
-                
+            
+            Text(folder.title)
+                .font(.headline)
+                .fontWeight(.semibold)
+            
             Spacer()
             
-            if folder.subfolders != nil{
+            if !folder.subfolders.isEmpty{
                 Button{
                     withAnimation{
                         toggleFolder()
                     }
                 } label: {
                     Image(systemName: expandedFolders.contains(folder.id) ? "chevron.down" : "chevron.right")
+                        .foregroundStyle(.gray)
                 }
             }
         }
@@ -37,12 +43,12 @@ struct FolderRowView: View {
         .padding(4)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .background(selectedFolderID == folder.id ? Color.secondary : Color.clear)
-        if expandedFolders.contains(folder.id), let subfolders = folder.subfolders {
-                        ForEach(subfolders) { subfolder in
-                            FolderRowView(folder: subfolder, selectedFolderID: $selectedFolderID, expandedFolders: $expandedFolders)
-                                .padding(.leading, 20) // 하위 폴더는 들여쓰기
-                        }
-                    }
+        if expandedFolders.contains(folder.id), !folder.subfolders.isEmpty {
+            ForEach(folder.subfolders) { subfolder in
+                FolderRowView(folder: subfolder, selectedFolderID: $selectedFolderID, expandedFolders: $expandedFolders)
+                    .padding(.leading, 20) // 하위 폴더는 들여쓰기
+            }
+        }
     }
     private func toggleFolder() {
         if expandedFolders.contains(folder.id) {
@@ -53,6 +59,6 @@ struct FolderRowView: View {
     }
 }
 
-#Preview {
-    FolderRowView(folder: FolderModel(title: "경제", subfolders: []), selectedFolderID: .constant(UUID()), expandedFolders: .constant([]))
-}
+//#Preview {
+//    FolderRowView(folder: FolderModel(title: "경제", subfolders: []), selectedFolderID: .constant(UUID()), expandedFolders: .constant([]))
+//}

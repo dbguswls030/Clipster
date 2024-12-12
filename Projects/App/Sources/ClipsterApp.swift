@@ -10,9 +10,11 @@ import Presentation
 
 @main
 struct ClipsterApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup{
-            MainTabView()
+            MainTabView(DIContainer: DIContainer())
         }
     }
 }

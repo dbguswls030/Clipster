@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import Domain
 
 struct PreViewURLView: View {
     @Binding var metaData: URLMetaData?
     var body: some View {
         if let metaData = metaData{
             HStack(spacing: 12){
-                if let imageURL = metaData.thumbnailImage{
+                if let imageURL = metaData.thumbnailImageURL{
                     // TODO: 이미지 사이즈 리팩토링
                     AsyncImage(url: imageURL){ image in
                         image.resizable()

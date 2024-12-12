@@ -8,29 +8,45 @@
 import SwiftUI
 import Combine
 import SwiftSoup
+import Domain
 
-final class SaveURLViewModel: ObservableObject{
+
+final public class SaveURLViewModel: ObservableObject{
     
     private var cancellables = Set<AnyCancellable>()
+    private let useCase: SaveUseCaseProtocol
+    
+    public init(useCase: SaveUseCaseProtocol, clipBoradURL: String? = ""){
+        self.useCase = useCase
+        if let url = clipBoradURL{ self.url = url }
+        bind()
+    }
+    
+    public init(useCase: SaveUseCase){
+        self.useCase = useCase
+        bind()
+    }
     
     @Published var metaData: URLMetaData?
     @Published var url: String = ""{
         didSet{
-            isLoading = true
+            isLoadingForTextField = true
         }
     }
-    @Published var isInvalidURL: Bool = false
-    @Published var isLoading: Bool = false
     
-    @Published var folderHierachy: [FolderModel] = [FolderModel.sampleData1, FolderModel.sampleData2]
-    @Published var selectedFolder: UUID?
-    @Published var expandedFolders: Set<UUID> = []
+    @Published var isInvalidURL: Bool = false
+    @Published var isLoadingForTextField: Bool = false
+    
+    @Published var folderHierachy: [FolderModel] = []
+    @Published var selectedFolder: String?
+    @Published var expandedFolders: Set<String> = []
     @Published var description: String = ""
     
-    init(clipBoardURL: String = ""){
-        self.url = clipBoardURL
-        bind()
-    }
+    
+    
+    @Published var isSaved: Bool = false
+    @Published var isLoadingDuringSave: Bool = false
+    @Published var isLoadingDuringMakeFolder: Bool = false
     
     private func bind(){
         $url
@@ -39,14 +55,14 @@ final class SaveURLViewModel: ObservableObject{
             .removeDuplicates()
             .flatMap{ url in
                 if let validURL = url{
-                    return self.fetchMetaData(url: validURL)
+                    return self.useCase.fetchMetaData(url: validURL)
                 }else{
                     return Just(nil).eraseToAnyPublisher()
                 }
             }
             .receive(on: RunLoop.main)
             .sink { [weak self] metaData in
-                self?.isLoading = false
+                self?.isLoadingForTextField = false
                 self?.metaData = metaData
             }
             .store(in: &cancellables)
@@ -61,55 +77,42 @@ final class SaveURLViewModel: ObservableObject{
                 }
             }.store(in: &cancellables)
         
-//        $metaData
-//            .sink { metaData in
-//                print(metaData?.title)
-//                print(metaData?.description)
-//                print(metaData?.thumbnailImage)
-//            }
-//            .store(in: &cancellables)
+        useCase.fetchFolder()
+            .sink{ [weak self] fetchModel in
+                self?.folderHierachy = fetchModel
+            }
+            .store(in: &cancellables)
     }
     
     func isAbleToSave() -> Bool{
-        !isInvalidURL && selectedFolder != nil && !isLoading && !description.isEmpty && metaData != nil
+        !isInvalidURL && selectedFolder != nil && !isLoadingForTextField && !description.isEmpty && metaData != nil && !isLoadingDuringSave
     }
     
     func makeURLClipModel() {
-        print(URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
+        isLoadingDuringSave = true
+        useCase.makeURLClip(model: URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
+            .flatMap{ [weak self] URLClipId in
+                guard let self = self, let URLClipId = URLClipId else { return Just(false).eraseToAnyPublisher()}
+                return self.useCase.saveURLClip(folderId: selectedFolder!, URLClipId: URLClipId)
+            }
+            .sink{ [weak self] bool in
+                self?.isSaved = bool
+                self?.isLoadingDuringSave = false
+            }
+            .store(in: &cancellables)
     }
     
-}
-
-// MARK: URL 변환
-extension SaveURLViewModel{
-    private func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>{
-        URLSession.shared.dataTaskPublisher(for: url)
-            .tryMap{ data, response -> Data in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      200..<300 ~= httpResponse.statusCode else{
-                    throw URLError(.badServerResponse)
-                }
-                return data
+    func makeFolder(){
+        isLoadingDuringMakeFolder = true
+        useCase.makeFolder()
+            .flatMap{ [weak self] isSuccessed -> AnyPublisher<[FolderModel], Never> in
+                guard let self = self, isSuccessed else { return Just([]).eraseToAnyPublisher() }
+                return self.useCase.fetchFolder()
             }
-            .tryMap{ data -> URLMetaData? in
-                let html = String(data: data, encoding: .utf8) ?? ""
-                return try self.parseHTML(html)
+            .sink{ [weak self] fetchModel in
+                self?.folderHierachy = fetchModel
+                self?.isLoadingDuringMakeFolder = false
             }
-            .replaceError(with: nil)
-            .eraseToAnyPublisher()
-    }
-    
-    private func parseHTML(_ html: String) throws -> URLMetaData? {
-        let document = try SwiftSoup.parse(html)
-        
-        // Open Graph 메타데이터 추출
-        let title = try document.select("meta[property=og:title]").attr("content")
-        let description = try document.select("meta[property=og:description]").attr("content")
-        let imageURLString = try document.select("meta[property=og:image]").attr("content")
-        
-        // URL로 변환
-        let imageURL = URL(string: imageURLString)
-        
-        return URLMetaData(title: title, description: description, thumbnailImage: imageURL)
+            .store(in: &cancellables)
     }
 }

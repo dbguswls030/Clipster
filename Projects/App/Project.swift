@@ -1,13 +1,13 @@
 @preconcurrency import ProjectDescription
 
 let project = Project(
-    name: "Clipster",
+    name: "Clipper",
     targets: [
         .target(
-            name: "Clipster",
+            name: "Clipper",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.ryuhyeonjinclipster.app",
+            bundleId: "com.clipper.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: .extendingDefault(
                 with: [
@@ -20,6 +20,7 @@ let project = Project(
                 .project(target: "Data", path: .relativeToRoot("Projects/Data")),
                 .project(target: "Presentation", path: .relativeToRoot("Projects/Presentation")),
                 .project(target: "ShareExtension", path: .relativeToRoot("Projects/ShareExtension")),
+                .external(name: "FirebaseFirestore"),
             ]
         ),
 //        .target(

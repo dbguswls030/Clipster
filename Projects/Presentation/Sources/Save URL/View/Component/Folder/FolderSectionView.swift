@@ -19,17 +19,29 @@ struct FolderSectionView: View {
                     .foregroundStyle(.black)
                     .padding(.leading)
                 Spacer()
+                Button{
+                    viewModel.makeFolder()
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .buttonStyle(.bordered)
+                .tint(.gray)
+                .buttonBorderShape(.capsule)
+                .padding(.trailing)
+                .disabled(viewModel.isLoadingDuringMakeFolder)
             }
-            GroupBox{
-                FolderListView(viewModel: FolderViewModel(folderHierachy: $viewModel.folderHierachy, selection: $viewModel.selectedFolder, expandedFolders: $viewModel.expandedFolders))
-            }
-            .padding(.horizontal)
+            if !viewModel.folderHierachy.isEmpty{
+                GroupBox{
+                    FolderListView(viewModel: FolderViewModel(folderHierachy: $viewModel.folderHierachy, selection: $viewModel.selectedFolder, expandedFolders: $viewModel.expandedFolders))
+                }
+                .padding(.horizontal)
+            }            
         }
     }
 }
 
-#Preview {
-    ScrollView{
-        FolderSectionView(viewModel: SaveURLViewModel(clipBoardURL: ""))
-    }
-}
+//#Preview {
+//    ScrollView{
+//        FolderSectionView(viewModel: SaveURLViewModel(useCase: ))
+//    }
+//}

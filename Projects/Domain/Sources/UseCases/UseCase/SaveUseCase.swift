@@ -27,7 +27,7 @@ extension SaveUseCase{
 }
 extension SaveUseCase{
     // MARK: Folder
-    public func makeFolder() -> AnyPublisher<Void, Never>{
+    public func makeFolder() -> AnyPublisher<Bool, Never>{
         repository.makeFolder()
     }
     

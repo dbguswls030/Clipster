@@ -100,9 +100,15 @@ final public class SaveURLViewModel: ObservableObject{
     }
     
     func makeFolder(){
+        isLoadingDuringMakeFolder = true
         useCase.makeFolder()
-            .sink { _ in
-                print("success makeFolder")
+            .flatMap{ [weak self] isSuccessed -> AnyPublisher<[FolderModel], Never> in
+                guard let self = self, isSuccessed else { return Just([]).eraseToAnyPublisher() }
+                return self.useCase.fetchFolder()
+            }
+            .sink{ [weak self] fetchModel in
+                self?.folderHierachy = fetchModel
+                self?.isLoadingDuringMakeFolder = false
             }
             .store(in: &cancellables)
     }

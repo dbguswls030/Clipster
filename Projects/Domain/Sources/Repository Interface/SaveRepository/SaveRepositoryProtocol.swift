@@ -14,7 +14,7 @@ public protocol SaveRepositoryProtocol{
     func makeURLClip(model: URLClipModel) -> AnyPublisher<String?, Never>
     
     // MARK: Folder
-    func makeFolder() -> AnyPublisher<Void, Never>
+    func makeFolder() -> AnyPublisher<Bool, Never>
     func fetchFolder() -> AnyPublisher<[FolderModel], Never>
     func saveURLClip(folderId: String, URLClipId: String) -> AnyPublisher<Bool, Never>
 }

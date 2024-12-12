@@ -62,11 +62,18 @@ extension SaveRepository{
 }
 extension SaveRepository{
     // MARK: Folder
-    public func makeFolder() -> AnyPublisher<Void, Never>{
+    public func makeFolder() -> AnyPublisher<Bool, Never>{
         let newModel = FolderModelDTO(title: "무제", subfolders: [], URLs: [])
         return service.requestPublisher(.makeFolder(documentId: newModel.id.value, model: newModel))
                 .map { response in
-                    
+                    if response.statusCode == 200{
+                        print("success makeFolder")
+                        return true
+                    }else{
+                        print("fail makeFolder", response.statusCode)
+                        print(String(data: response.data, encoding: .utf8))
+                        return false
+                    }
                 }
                 .catch { error in
                     switch error{
@@ -78,7 +85,7 @@ extension SaveRepository{
                     default:
                         print("Unknown Error: \(error.localizedDescription)")
                     }
-                    return Just(()).eraseToAnyPublisher()
+                    return Just(false).eraseToAnyPublisher()
                 }
                 .eraseToAnyPublisher()
     }
@@ -109,10 +116,10 @@ extension SaveRepository{
         return service.requestPublisher(.saveURLClip(folderId: folderId, URLClipId: URLClipId))
             .tryMap { response in
                 if response.statusCode == 200{
-                    print("success")
+                    print("success saveURLClip")
                     return true
                 }else{
-                    print(response.statusCode, "fail")
+                    print("fail saveURLClip", response.statusCode)
                     print(String(data: response.data, encoding: .utf8))
                     return false
                 }

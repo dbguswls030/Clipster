@@ -23,6 +23,9 @@ let project = Project(
                 .project(target: "Domain", path: .relativeToRoot("Projects/Domain")),
                 .external(name: "Moya"),
                 .external(name: "CombineMoya"),
+                .external(name: "FirebaseFirestore"),
+                .external(name: "FirebaseAuth"),
+                .external(name: "SwiftSoup")
             ]
         ),
     ]

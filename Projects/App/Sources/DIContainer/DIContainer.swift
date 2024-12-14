@@ -29,3 +29,11 @@ extension DIContainer: SaveDIContainerProtocol{
         return SaveURLViewModel(useCase: useCase)
     }
 }
+
+extension DIContainer: AuthDIContainerProtocol{
+    public func makeAuthDIContainer() -> LoginViewModel {
+        let repository = AuthRepository()
+        let useCase = AuthUseCase(repository: repository)
+        return LoginViewModel(useCase: useCase)
+    }
+}

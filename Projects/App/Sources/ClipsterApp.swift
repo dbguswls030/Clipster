@@ -14,7 +14,8 @@ struct ClipsterApp: App {
     
     var body: some Scene {
         WindowGroup{
-            MainTabView(DIContainer: DIContainer())
+            LoginView(viewModel: DIContainer().makeAuthDIContainer())
+//            MainTabView(DIContainer: DIContainer())
         }
     }
 }

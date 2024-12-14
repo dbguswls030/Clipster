@@ -18,10 +18,9 @@ let project = Project(
             deploymentTargets: .iOS("16.0"),
             infoPlist: .default,
             sources: ["Sources/**"],
-            resources: [],
+            resources: ["Resources/**"],
             dependencies: [
                 .project(target: "Domain", path: .relativeToRoot("Projects/Domain")),
-                .external(name: "SwiftSoup", condition: .none)
             ]
         ),
     ]

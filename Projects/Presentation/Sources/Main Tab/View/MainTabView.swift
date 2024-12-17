@@ -11,9 +11,9 @@ public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = MainTabViewModel()
     
-    let DIContainer: SaveDIContainerProtocol
+    let DIContainer: DIContainerProtocol
     
-    public init(DIContainer: SaveDIContainerProtocol) {
+    public init(DIContainer: DIContainerProtocol) {
         self.DIContainer = DIContainer
     }
     

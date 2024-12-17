@@ -10,6 +10,7 @@ import Combine
 import AuthenticationServices
 
 public protocol AuthRepositoryProtocol{
+    func authStateListener() -> AnyPublisher<Bool, Error>
     func signInWithApple() -> Future<String, Error>
     func testSignInWithApple() -> AnyPublisher<String, Error>
 }

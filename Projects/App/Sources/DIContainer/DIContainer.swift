@@ -10,7 +10,7 @@ import Domain
 import Presentation
 import Data
 
-final public class DIContainer{
+final public class DIContainer: DIContainerProtocol{
     
     public init(){ }
     
@@ -35,5 +35,11 @@ extension DIContainer: AuthDIContainerProtocol{
         let repository = AuthRepository()
         let useCase = AuthUseCase(repository: repository)
         return LoginViewModel(useCase: useCase)
+    }
+    
+    public func makeRootDIContainer() -> RootViewModel {
+        let repository = AuthRepository()
+        let useCase = AuthUseCase(repository: repository)
+        return RootViewModel(useCase: useCase)
     }
 }

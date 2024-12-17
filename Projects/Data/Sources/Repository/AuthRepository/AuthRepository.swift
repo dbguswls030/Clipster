@@ -16,6 +16,10 @@ enum SignInError: Error {
     case invalidToken
 }
 
+enum AuthError: Error {
+    case noUser
+}
+
 final public class AuthRepository: NSObject, AuthRepositoryProtocol{
     private var currentNonce: String?
     private var onCompletion: ((Result<String, Error>) -> Void)?
@@ -23,6 +27,20 @@ final public class AuthRepository: NSObject, AuthRepositoryProtocol{
 }
 
 extension AuthRepository: ASAuthorizationControllerDelegate{
+    public func authStateListener() -> AnyPublisher<Bool, Error>{
+        return Future { promise in
+            _ = Auth.auth().addStateDidChangeListener{ _, user in
+                if user != nil{
+                    promise(.success(user != nil))
+                }else{
+                    promise(.failure(AuthError.noUser))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    
     public func testSignInWithApple() -> AnyPublisher<String, Error>{
         return Future{ [weak self] promise in
             

@@ -24,24 +24,24 @@ final public class AuthRepository: NSObject, AuthRepositoryProtocol{
     private var currentNonce: String?
     private var onCompletion: ((Result<String, Error>) -> Void)?
     
+    private let authStateSubject = PassthroughSubject<Bool, Never>()
+    private var authStateListenerHandle: AuthStateDidChangeListenerHandle?
+    
+    public override init(){
+        super.init()
+        authStateListenerHandle = Auth.auth().addStateDidChangeListener{ [weak self] _, user in
+            self?.authStateSubject.send(user != nil)
+        }
+    }
 }
 
 extension AuthRepository: ASAuthorizationControllerDelegate{
-    public func authStateListener() -> AnyPublisher<Bool, Error>{
-        return Future { promise in
-            _ = Auth.auth().addStateDidChangeListener{ _, user in
-                if user != nil{
-                    promise(.success(user != nil))
-                }else{
-                    promise(.failure(AuthError.noUser))
-                }
-            }
-        }
-        .eraseToAnyPublisher()
+    public func authStateListener() -> AnyPublisher<Bool, Never>{
+        return authStateSubject.eraseToAnyPublisher()
     }
     
     
-    public func testSignInWithApple() -> AnyPublisher<String, Error>{
+    public func signInWithApple() -> AnyPublisher<String, Error>{
         return Future{ [weak self] promise in
             
             let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -60,25 +60,6 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
             }
         }
         .eraseToAnyPublisher()
-    }
-    public func signInWithApple() -> Future<String, Error>{
-        return Future{ [weak self] promise in
-            
-            let appleIDProvider = ASAuthorizationAppleIDProvider()
-            let request = appleIDProvider.createRequest()
-            let nonce = self?.randomNonceString()
-            self?.currentNonce = nonce
-            request.requestedScopes = [.fullName, .email] //유저로 부터 알 수 있는 정보들(name, email)
-            
-            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-            authorizationController.delegate = self
-            authorizationController.presentationContextProvider = self
-            authorizationController.performRequests()
-            
-            self?.onCompletion = { result in
-                promise(result)
-            }
-        }
     }
     
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {

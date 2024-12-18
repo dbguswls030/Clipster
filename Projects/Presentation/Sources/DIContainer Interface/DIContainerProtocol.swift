@@ -7,6 +7,8 @@
 
 import Foundation
 
-public protocol DIContainerProtocol: AuthDIContainerProtocol, SaveDIContainerProtocol{
+public protocol DIContainerProtocol: AuthDIContainerProtocol,
+                                     SaveDIContainerProtocol,
+                                     MyDIContainerProtocol{
     
 }

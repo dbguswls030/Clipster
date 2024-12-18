@@ -22,17 +22,8 @@ public class RootViewModel: ObservableObject{
     
     private func bind(){
         useCase.authStateListener()
-            .print()
-            .sink(receiveCompletion: { completion in
-                switch completion{
-                case .finished:
-                    print("success")
-                case .failure:
-                    print("failure")
-                }
-            }, receiveValue: { [weak self] isLoggedIn in
-                self?.isLoggedIn = isLoggedIn
-            })
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isLoggedIn, on: self)
             .store(in: &cancellables)
     }
     

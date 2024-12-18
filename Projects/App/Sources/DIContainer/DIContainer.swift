@@ -43,3 +43,11 @@ extension DIContainer: AuthDIContainerProtocol{
         return RootViewModel(useCase: useCase)
     }
 }
+
+extension DIContainer: MyDIContainerProtocol{
+    public func makeMyDIContainer() -> MyViewModel {
+        let repository = MyRepository()
+        let useCase = MyUseCase(repository: repository)
+        return MyViewModel(useCase: useCase)
+    }
+}

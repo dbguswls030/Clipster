@@ -32,19 +32,4 @@ final public class LoginViewModel: ObservableObject{
             })
             .store(in: &cancellables)
     }
-    
-    func testSignInWithApple(){
-        useCase.testSignInWithApple()
-            .sink(receiveCompletion: { completion in
-                switch completion{
-                case .failure(let error):
-                    print(error.localizedDescription)
-                case .finished:
-                    break
-                }
-            }, receiveValue: { result in
-                print(result)
-            })
-            .store(in: &cancellables)
-    }
 }

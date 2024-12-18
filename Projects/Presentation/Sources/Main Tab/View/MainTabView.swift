@@ -25,7 +25,7 @@ public struct MainTabView: View {
                         Label("clips", systemImage: "star")
                     }
                     .tag(TabCase.clips)
-                MyPageView()
+                MyPageView(viewModel: DIContainer.makeMyDIContainer())
                     .tabItem{
                         Label("My", systemImage: "star.fill")
                     }

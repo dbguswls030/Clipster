@@ -16,14 +16,11 @@ final public class AuthUseCase: AuthUseCaseProtocol{
         self.repository = repository
     }
     
-    public func authStateListener() -> AnyPublisher<Bool, Error> {
+    public func authStateListener() -> AnyPublisher<Bool, Never> {
         repository.authStateListener()
     }
     
-    public func signInWithApple() -> Future<String, Error>{
+    public func signInWithApple() -> AnyPublisher<String, Error>{
         repository.signInWithApple()
-    }
-    public func testSignInWithApple() -> AnyPublisher<String, Error>{
-        repository.testSignInWithApple()
     }   
 }

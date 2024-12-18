@@ -36,12 +36,6 @@ extension DIContainer: AuthDIContainerProtocol{
         let useCase = AuthUseCase(repository: repository)
         return LoginViewModel(useCase: useCase)
     }
-    
-    public func makeRootDIContainer() -> RootViewModel {
-        let repository = AuthRepository()
-        let useCase = AuthUseCase(repository: repository)
-        return RootViewModel(useCase: useCase)
-    }
 }
 
 extension DIContainer: MyDIContainerProtocol{
@@ -49,5 +43,13 @@ extension DIContainer: MyDIContainerProtocol{
         let repository = MyRepository()
         let useCase = MyUseCase(repository: repository)
         return MyViewModel(useCase: useCase)
+    }
+}
+
+extension DIContainer: RootDIContainerProtocol{
+    public func makeRootDIContainer() -> RootViewModel {
+        let repository = AuthRepository()
+        let useCase = AuthUseCase(repository: repository)
+        return RootViewModel(useCase: useCase)
     }
 }

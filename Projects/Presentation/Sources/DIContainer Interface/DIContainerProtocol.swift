@@ -9,6 +9,7 @@ import Foundation
 
 public protocol DIContainerProtocol: AuthDIContainerProtocol,
                                      SaveDIContainerProtocol,
-                                     MyDIContainerProtocol{
+                                     MyDIContainerProtocol,
+                                     RootDIContainerProtocol{
     
 }

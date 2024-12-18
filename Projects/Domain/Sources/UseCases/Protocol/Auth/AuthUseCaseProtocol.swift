@@ -10,6 +10,5 @@ import Combine
 import AuthenticationServices
 
 public protocol AuthUseCaseProtocol{
-    func authStateListener() -> AnyPublisher<Bool, Never>
     func signInWithApple() -> AnyPublisher<String, Error>
 }

@@ -17,27 +17,32 @@ public struct LoginView: View {
     }
     
     public var body: some View {
-        VStack{
-            Button {
-                viewModel.signInWithApple()
-            } label: {
-                HStack{
-                    PresentationAsset.appleLogo.swiftUIImage
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .padding(.leading, 25)
-                    Spacer()
-                    Text("Apple로 시작하기")
-                        .foregroundStyle(.white)
-                        .padding(.trailing, 25)
-                    Spacer()
+        NavigationStack{
+            VStack{
+                Button {
+                    viewModel.signInWithApple()
+                } label: {
+                    HStack{
+                        PresentationAsset.appleLogo.swiftUIImage
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .padding(.leading, 25)
+                        Spacer()
+                        Text("Apple로 시작하기")
+                            .foregroundStyle(.white)
+                            .padding(.trailing, 25)
+                        Spacer()
+                    }
                 }
+                .frame(width: UIScreen.main.bounds.width * 0.8, height: 50)
+                .background {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                }
+                .padding(.top, 200)
             }
-            .frame(width: UIScreen.main.bounds.width * 0.8, height: 50)
-            .background {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
+            .navigationDestination(isPresented: $viewModel.isSuccessedAppleLogin) {
+                AgreementView(viewModel: viewModel)
             }
-            .padding(.top, 200)
         }
     }
 }

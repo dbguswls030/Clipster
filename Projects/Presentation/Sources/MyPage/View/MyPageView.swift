@@ -15,11 +15,18 @@ public struct MyPageView: View {
     }
     
     public var body: some View {
-        Button {
-            viewModel.signOut()
-        } label: {
-            Text("로그아웃")
+        VStack(spacing: 10){
+            Button {
+                viewModel.logout()
+            } label: {
+                Text("로그아웃")
+            }
+            
+            Button {
+                viewModel.signout()
+            } label: {
+                Text("회원탈퇴")
+            }
         }
-
     }
 }

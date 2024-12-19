@@ -10,5 +10,6 @@ import Combine
 import AuthenticationServices
 
 public protocol AuthRepositoryProtocol{
-    func signInWithApple() -> AnyPublisher<String, Error>
+    func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>
+    func signInWithFirebase(model: AppleCredentialModel) -> AnyPublisher<String, Error>
 }

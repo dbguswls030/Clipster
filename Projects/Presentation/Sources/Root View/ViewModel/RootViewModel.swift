@@ -11,9 +11,9 @@ import Domain
 
 public class RootViewModel: ObservableObject{
     private var cancellables = Set<AnyCancellable>()
-    let useCase: AuthUseCaseProtocol
+    let useCase: RootUseCaseProtocol
     
-    public init(useCase: AuthUseCaseProtocol) {
+    public init(useCase: RootUseCaseProtocol) {
         self.useCase = useCase
         bind()
     }

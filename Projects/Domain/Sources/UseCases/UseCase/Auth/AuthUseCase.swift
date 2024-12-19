@@ -16,7 +16,11 @@ final public class AuthUseCase: AuthUseCaseProtocol{
         self.repository = repository
     }
     
-    public func signInWithApple() -> AnyPublisher<String, Error>{
+    public func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>{
         repository.signInWithApple()
-    }   
+    }
+    
+    public func signInWithFirebase(model: AppleCredentialModel) -> AnyPublisher<String, Error> {
+        repository.signInWithFirebase(model: model)
+    }
 }

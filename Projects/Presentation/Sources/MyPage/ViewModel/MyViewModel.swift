@@ -17,12 +17,12 @@ public class MyViewModel: ObservableObject{
         self.useCase = useCase
     }
     
-    func signOut(){
-        useCase.signOut()
+    func logout(){
+        useCase.logout()
             .sink { completion in
                 switch completion{
                 case .finished:
-                    print("signOut")
+                    print("logout")
                 case .failure(let error):
                     print("failed : \(error)")
                 }
@@ -30,6 +30,23 @@ public class MyViewModel: ObservableObject{
                 
             }
             .store(in: &cancellables)
-
+    }
+    
+    func signout(){
+        useCase.signout()
+            .tryMap{ [weak self] in
+                return self?.useCase.logout()
+            }
+            .sink { completion in
+                switch completion{
+                case .finished:
+                    print("signout & logout")
+                case .failure(let error):
+                    print("failed : \(error)")
+                }
+            } receiveValue: { _ in
+                
+            }
+            .store(in: &cancellables)
     }
 }

@@ -48,8 +48,8 @@ extension DIContainer: MyDIContainerProtocol{
 
 extension DIContainer: RootDIContainerProtocol{
     public func makeRootDIContainer() -> RootViewModel {
-        let repository = AuthRepository()
-        let useCase = AuthUseCase(repository: repository)
+        let repository = RootRepository()
+        let useCase = RootUseCase(repository: repository)
         return RootViewModel(useCase: useCase)
     }
 }

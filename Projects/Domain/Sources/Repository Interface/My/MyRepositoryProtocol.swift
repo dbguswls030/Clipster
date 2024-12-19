@@ -9,5 +9,6 @@ import Foundation
 import Combine
 
 public protocol MyRepositoryProtocol{
-    func signOut() -> AnyPublisher<Void, Error>
+    func logout() -> AnyPublisher<Void, Error>
+    func signout() -> AnyPublisher<Void, Error>
 }

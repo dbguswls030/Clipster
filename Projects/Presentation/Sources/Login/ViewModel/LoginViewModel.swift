@@ -18,18 +18,40 @@ final public class LoginViewModel: ObservableObject{
         self.useCase = useCase
     }
     
+    @Published var isSuccessedAppleLogin: Bool = false
+    @Published var appleCredentialModel: AppleCredentialModel?
+    
     func signInWithApple(){
         useCase.signInWithApple()
-            .sink(receiveCompletion: { completion in
+            .sink { completion in
                 switch completion{
                 case .failure(let error):
                     print(error.localizedDescription)
                 case .finished:
                     break
                 }
-            }, receiveValue: { result in
-                print(result)
-            })
+            } receiveValue: { [weak self] model in
+                self?.appleCredentialModel = model
+                self?.isSuccessedAppleLogin = true
+            }
             .store(in: &cancellables)
+    }
+    
+    func signInWithFirebase(){
+        guard let model = appleCredentialModel else { return }
+        useCase.signInWithFirebase(model: model)
+            .sink { completion in
+                switch completion{
+                case .failure(let error):
+                    print(error.localizedDescription)
+                case .finished:
+                    break
+                }
+            } receiveValue: { value in
+                print(value)
+            }
+            .store(in: &cancellables)
+
+            
     }
 }

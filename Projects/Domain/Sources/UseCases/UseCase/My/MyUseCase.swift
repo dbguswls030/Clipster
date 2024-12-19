@@ -14,7 +14,10 @@ final public class MyUseCase: MyUseCaseProtocol {
     public init(repository: MyRepositoryProtocol) {
         self.repository = repository
     }
-    public func signOut() -> AnyPublisher<Void, Error>{
-        repository.signOut()
+    public func logout() -> AnyPublisher<Void, Error>{
+        repository.logout()
+    }
+    public func signout() -> AnyPublisher<Void, any Error> {
+        repository.signout()
     }
 }

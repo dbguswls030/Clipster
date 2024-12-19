@@ -15,28 +15,61 @@ import FirebaseAuth
 enum SignInError: Error {
     case invalidToken
 }
+enum AuthError: Error{
+    case noUid
+}
 
 final public class AuthRepository: NSObject, AuthRepositoryProtocol{
     private var currentNonce: String?
     private var onCompletion: ((Result<String, Error>) -> Void)?
+    private var testOnCompletion: ((Result<AppleCredentialModel, Error>) -> Void)?
 }
 
 extension AuthRepository: ASAuthorizationControllerDelegate{
-    public func signInWithApple() -> AnyPublisher<String, Error>{
+    public func signInWithFirebase(model: AppleCredentialModel) -> AnyPublisher<String, Error> {
+        return Future{ promise in
+            let credential = OAuthProvider.appleCredential(withIDToken: model.idTokenString,
+                                                           rawNonce: model.rawNonce,
+                                                           fullName: model.fullName)
+            Auth.auth().signIn(with: credential) { (authResult, error) in
+                if let error = error {
+                    print(error.localizedDescription)
+                    promise(.failure(SignInError.invalidToken))
+                    return
+                }
+                if let _ = Auth.auth().currentUser?.displayName{
+                    // 처음 로그인할 때
+                    promise(.success("---"))
+                    // TODO: firestore 유저 만들기
+                }else{
+                    // 이미 로그인한 적이 있을 때
+                    guard let uid = authResult?.user.uid else {
+                        promise(.failure(AuthError.noUid))
+                        return
+                    }
+                    promise(.success(uid))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    public func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>{
         return Future{ [weak self] promise in
-            
+            guard let self = self else { return }
             let appleIDProvider = ASAuthorizationAppleIDProvider()
             let request = appleIDProvider.createRequest()
-            let nonce = self?.randomNonceString()
-            self?.currentNonce = nonce
+            let nonce = self.randomNonceString()
+            self.currentNonce = nonce
             request.requestedScopes = [.fullName, .email] //유저로 부터 알 수 있는 정보들(name, email)
+            request.nonce = sha256(nonce)
             
             let authorizationController = ASAuthorizationController(authorizationRequests: [request])
             authorizationController.delegate = self
             authorizationController.presentationContextProvider = self
             authorizationController.performRequests()
             
-            self?.onCompletion = { result in
+            self.testOnCompletion = { result in
                 promise(result)
             }
         }
@@ -44,7 +77,7 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
     }
     
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-
+        
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             guard let nonce = currentNonce else {
                 fatalError("Invalid state: A login callback was received, but no login request was sent.")
@@ -57,21 +90,15 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
                 print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
                 return
             }
-            // Initialize a Firebase credential, including the user's full name.
-            let credential = OAuthProvider.appleCredential(withIDToken: idTokenString,
-                                                           rawNonce: nonce,
-                                                           fullName: appleIDCredential.fullName)
-            // Sign in with Firebase.
-            Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
-                guard let self = self else { return }
-                if let error = error {
-                    print(error.localizedDescription)
-                    self.onCompletion?(.failure(SignInError.invalidToken))
-                    return
-                }
-//                if let _ = authResult?.user.displayName { } // 처음 로그인 했을 때
-                self.onCompletion?(.success((authResult?.user.uid)!))
+            
+            guard let fullName = appleIDCredential.fullName else{
+                self.testOnCompletion?(.failure(SignInError.invalidToken))
+                return
             }
+            
+            self.testOnCompletion?(.success(AppleCredentialModel(idTokenString: idTokenString,
+                                                                 rawNonce: nonce,
+                                                                 fullName: fullName)))
         }
     }
     
@@ -109,7 +136,6 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
         
         return String(nonce)
     }
-    
 }
 
 extension AuthRepository: ASAuthorizationControllerPresentationContextProviding {

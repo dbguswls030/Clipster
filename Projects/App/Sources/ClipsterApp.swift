@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Presentation
+import Data
+import FirebaseAuth
 
 @main
 struct ClipsterApp: App {
@@ -14,7 +16,7 @@ struct ClipsterApp: App {
     
     var body: some Scene {
         WindowGroup{
-            MainTabView(DIContainer: DIContainer())
+            RootView(DIContainer: DIContainer())
         }
     }
 }

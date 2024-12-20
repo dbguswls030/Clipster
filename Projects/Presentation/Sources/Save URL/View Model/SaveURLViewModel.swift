@@ -22,7 +22,7 @@ final public class SaveURLViewModel: ObservableObject{
         bind()
     }
     
-    public init(useCase: SaveUseCase){
+    public init(useCase: SaveUseCaseProtocol){
         self.useCase = useCase
         bind()
     }

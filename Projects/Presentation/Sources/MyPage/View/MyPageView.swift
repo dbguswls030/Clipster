@@ -7,12 +7,26 @@
 
 import SwiftUI
 
-struct MyPageView: View {
-    var body: some View {
-        Text("My Page")
+public struct MyPageView: View {
+    @StateObject var viewModel: MyViewModel
+    
+    public init(viewModel: MyViewModel) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
     }
-}
-
-#Preview {
-    MyPageView()
+    
+    public var body: some View {
+        VStack(spacing: 10){
+            Button {
+                viewModel.logout()
+            } label: {
+                Text("로그아웃")
+            }
+            
+            Button {
+                viewModel.signout()
+            } label: {
+                Text("회원탈퇴")
+            }
+        }
+    }
 }

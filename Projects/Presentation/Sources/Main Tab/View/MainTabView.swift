@@ -11,9 +11,9 @@ public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = MainTabViewModel()
     
-    let DIContainer: SaveDIContainerProtocol
+    let DIContainer: DIContainerProtocol
     
-    public init(DIContainer: SaveDIContainerProtocol) {
+    public init(DIContainer: DIContainerProtocol) {
         self.DIContainer = DIContainer
     }
     
@@ -25,7 +25,7 @@ public struct MainTabView: View {
                         Label("clips", systemImage: "star")
                     }
                     .tag(TabCase.clips)
-                MyPageView()
+                MyPageView(viewModel: DIContainer.makeMyDIContainer())
                     .tabItem{
                         Label("My", systemImage: "star.fill")
                     }
@@ -37,6 +37,12 @@ public struct MainTabView: View {
             .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
             .navigationDestination(isPresented: $viewModel.isPresentSaveURL) {
                 SaveURLView(viewModel: DIContainer.makeSaveDIContainer(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+                    .onAppear{
+                        viewModel.isShowingSaveURLView = true
+                    }
+                    .onDisappear{
+                        viewModel.isShowingSaveURLView = false
+                    }
             }
         }
     }

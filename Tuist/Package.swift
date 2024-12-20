@@ -12,7 +12,6 @@ let packageSettings = PackageSettings(
         "SwiftSoup": .framework,
         "Moya" : .framework,
         "CombineMoya" : .framework,
-        "FirebaseFirestore" : .framework
     ]
 )
 #endif

@@ -22,9 +22,6 @@ final public class SaveRepository: SaveRepositoryProtocol{
 //        let plugin = NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
 //        service = MoyaProvider<SaveService>(plugins: [plugin])
 //    }
-    
-
-
 }
 extension SaveRepository{
     // MARK: URL
@@ -137,7 +134,6 @@ extension SaveRepository{
                 }
                 return Just(false).eraseToAnyPublisher()
             }
-            .print()
             .eraseToAnyPublisher()
     }
 }

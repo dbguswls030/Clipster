@@ -12,4 +12,6 @@ import AuthenticationServices
 public protocol AuthRepositoryProtocol{
     func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>
     func signInWithFirebase(model: AppleCredentialModel) -> AnyPublisher<String, Error>
+    func checkIsExistedUser(uid: String) -> AnyPublisher<Bool, Error>
+    func createUser(uid: String) -> AnyPublisher<Void, Error>
 }

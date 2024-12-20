@@ -134,7 +134,6 @@ extension SaveRepository{
                 }
                 return Just(false).eraseToAnyPublisher()
             }
-            .print()
             .eraseToAnyPublisher()
     }
 }

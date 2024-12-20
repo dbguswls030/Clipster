@@ -23,4 +23,12 @@ final public class AuthUseCase: AuthUseCaseProtocol{
     public func signInWithFirebase(model: AppleCredentialModel) -> AnyPublisher<String, Error> {
         repository.signInWithFirebase(model: model)
     }
+    
+    public func checkIsExistedUser(uid: String) -> AnyPublisher<Bool, Error> {
+        repository.checkIsExistedUser(uid: uid)
+    }
+    
+    public func createUser(uid: String) -> AnyPublisher<Void, Error>{
+        repository.createUser(uid: uid)
+    }
 }

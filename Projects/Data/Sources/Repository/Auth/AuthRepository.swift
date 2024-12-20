@@ -11,21 +11,49 @@ import Domain
 import AuthenticationServices
 import CryptoKit
 import FirebaseAuth
+import Moya
+import CombineMoya
 
-enum SignInError: Error {
-    case invalidToken
-}
 enum AuthError: Error{
     case noUid
+    case signInError
+    case noApplefullName
+    case isNotExistUser
+    case failedCreateUser
 }
 
-final public class AuthRepository: NSObject, AuthRepositoryProtocol{
+final public class AuthRepository: NSObject{
     private var currentNonce: String?
-    private var onCompletion: ((Result<String, Error>) -> Void)?
-    private var testOnCompletion: ((Result<AppleCredentialModel, Error>) -> Void)?
+    private var onCompletion: ((Result<AppleCredentialModel, Error>) -> Void)?
+    private let service = MoyaProvider<AuthService>()
+    public override init() {}
+    private var cancellable = Set<AnyCancellable>()
 }
 
-extension AuthRepository: ASAuthorizationControllerDelegate{
+extension AuthRepository: AuthRepositoryProtocol{
+    public func checkIsExistedUser(uid: String) -> AnyPublisher<Bool, Error>{
+        return service.requestPublisher(.checkIsExistedUser(uid: uid))
+            .map { response in
+                return response.statusCode == 200
+            }
+            .catch { _ in Just(false).setFailureType(to: Error.self) } // User does not exist
+            .eraseToAnyPublisher()
+    }
+    
+    public func createUser(uid: String) -> AnyPublisher<Void, Error>{
+        let model = UserModelDTO(id: uid)
+        return service.requestPublisher(.createUser(model: model))
+            .tryMap{ response in
+                guard response.statusCode == 200 else{
+                    throw AuthError.failedCreateUser
+                }
+            }
+            .catch{ error in
+                Fail(error: error).eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+    
     public func signInWithFirebase(model: AppleCredentialModel) -> AnyPublisher<String, Error> {
         return Future{ promise in
             let credential = OAuthProvider.appleCredential(withIDToken: model.idTokenString,
@@ -34,26 +62,21 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
             Auth.auth().signIn(with: credential) { (authResult, error) in
                 if let error = error {
                     print(error.localizedDescription)
-                    promise(.failure(SignInError.invalidToken))
+                    promise(.failure(AuthError.signInError))
                     return
                 }
-                if let _ = Auth.auth().currentUser?.displayName{
-                    // 처음 로그인할 때
-                    promise(.success("---"))
-                    // TODO: firestore 유저 만들기
-                }else{
-                    // 이미 로그인한 적이 있을 때
-                    guard let uid = authResult?.user.uid else {
-                        promise(.failure(AuthError.noUid))
-                        return
-                    }
-                    promise(.success(uid))
+                guard let uid = authResult?.user.uid else {
+                    promise(.failure(AuthError.noUid))
+                    return
                 }
+                promise(.success(uid))
             }
         }
         .eraseToAnyPublisher()
     }
-    
+}
+
+extension AuthRepository: ASAuthorizationControllerDelegate{
     public func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>{
         return Future{ [weak self] promise in
             guard let self = self else { return }
@@ -69,7 +92,7 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
             authorizationController.presentationContextProvider = self
             authorizationController.performRequests()
             
-            self.testOnCompletion = { result in
+            self.onCompletion = { result in
                 promise(result)
             }
         }
@@ -92,11 +115,11 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
             }
             
             guard let fullName = appleIDCredential.fullName else{
-                self.testOnCompletion?(.failure(SignInError.invalidToken))
+                self.onCompletion?(.failure(AuthError.noApplefullName))
                 return
             }
             
-            self.testOnCompletion?(.success(AppleCredentialModel(idTokenString: idTokenString,
+            self.onCompletion?(.success(AppleCredentialModel(idTokenString: idTokenString,
                                                                  rawNonce: nonce,
                                                                  fullName: fullName)))
         }

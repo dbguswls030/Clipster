@@ -10,11 +10,12 @@ import SwiftUI
 public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = MainTabViewModel()
-    
+    @ObservedObject var rootRouter = AppRouter()
     let DIContainer: DIContainerProtocol
     
-    public init(DIContainer: DIContainerProtocol) {
+    public init(DIContainer: DIContainerProtocol, router: AppRouter) {
         self.DIContainer = DIContainer
+        self.rootRouter = router
     }
     
     public var body: some View {
@@ -25,7 +26,7 @@ public struct MainTabView: View {
                         Label("clips", systemImage: "star")
                     }
                     .tag(TabCase.clips)
-                MyPageView(viewModel: DIContainer.makeMyDIContainer())
+                MyPageView(viewModel: DIContainer.makeMyDIContainer(), router: rootRouter)
                     .tabItem{
                         Label("My", systemImage: "star.fill")
                     }

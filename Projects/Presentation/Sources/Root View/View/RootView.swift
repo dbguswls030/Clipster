@@ -11,17 +11,28 @@ public struct RootView: View {
     let DIContainer: DIContainerProtocol
     
     @StateObject var viewModel: RootViewModel
+    @ObservedObject var rootRouter = AppRouter()
     
     public init(DIContainer: DIContainerProtocol) {
         self.DIContainer = DIContainer
         self._viewModel = StateObject(wrappedValue: DIContainer.makeRootDIContainer())
     }
-
+    
     public var body: some View {
-        if viewModel.isLoggedIn{
-            MainTabView(DIContainer: DIContainer)
-        }else{
-            LoginView(viewModel: DIContainer.makeAuthDIContainer())
+        Group{
+            switch rootRouter.currentRoute {
+            case .login:
+                LoginView(viewModel: DIContainer.makeAuthDIContainer(), router: rootRouter)
+            case .mainTab:
+                MainTabView(DIContainer: DIContainer, router: rootRouter)
+            }
+        }
+        .animation(.easeInOut, value: rootRouter.currentRoute)
+        .onChange(of: viewModel.isLoggedIn) { newValue in
+            switch newValue{
+            case true: rootRouter.currentRoute = .mainTab
+            case false: rootRouter.currentRoute = .login
+            }
         }
     }
 }

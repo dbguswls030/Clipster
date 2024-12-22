@@ -11,9 +11,10 @@ import CryptoKit
 
 public struct LoginView: View {
     @StateObject public var viewModel: LoginViewModel
-    
-    public init(viewModel: LoginViewModel){
-        self._viewModel = StateObject(wrappedValue: viewModel) 
+    @ObservedObject var rootRouter: AppRouter
+    public init(viewModel: LoginViewModel, router: AppRouter){
+        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.rootRouter = router
     }
     
     public var body: some View {
@@ -41,7 +42,7 @@ public struct LoginView: View {
                 .padding(.top, 200)
             }
             .navigationDestination(isPresented: $viewModel.isSuccessedAppleLogin) {
-                AgreementView(viewModel: viewModel)
+                AgreementView(viewModel: viewModel, router: rootRouter)
             }
         }
     }

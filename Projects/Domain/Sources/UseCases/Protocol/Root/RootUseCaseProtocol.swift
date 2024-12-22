@@ -10,4 +10,5 @@ import Combine
 
 public protocol RootUseCaseProtocol {
     func authStateListener() -> AnyPublisher<Bool, Never>
+    func fetchCurrentUser() -> AnyPublisher<Bool, Never>
 }

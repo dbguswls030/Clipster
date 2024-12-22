@@ -21,10 +21,9 @@ public class RootViewModel: ObservableObject{
     @Published var isLoggedIn: Bool = false
     
     private func bind(){
-        useCase.authStateListener()
+        useCase.fetchCurrentUser()
             .receive(on: DispatchQueue.main)
             .assign(to: \.isLoggedIn, on: self)
             .store(in: &cancellables)
     }
-    
 }

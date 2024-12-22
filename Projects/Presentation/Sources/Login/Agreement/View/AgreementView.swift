@@ -9,9 +9,11 @@ import SwiftUI
 
 public struct AgreementView: View {
     @ObservedObject var viewModel: LoginViewModel
+    @ObservedObject var rootRouter: AppRouter
     
-    public init(viewModel: LoginViewModel){
+    public init(viewModel: LoginViewModel, router: AppRouter){
         self.viewModel = viewModel
+        self.rootRouter = router
     }
     
     public var body: some View {
@@ -28,6 +30,9 @@ public struct AgreementView: View {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
             }
             .padding(.top, 200)
+        }
+        .onChange(of: viewModel.isSuccessedFirebaseLogin) { newValue in
+            if newValue{ rootRouter.currentRoute = .mainTab }
         }
     }
 }

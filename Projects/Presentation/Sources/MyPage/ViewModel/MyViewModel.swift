@@ -17,6 +17,8 @@ public class MyViewModel: ObservableObject{
         self.useCase = useCase
     }
     
+    @Published var isExited: Bool = false
+    
     func logout(){
         useCase.logout()
             .sink { completion in
@@ -26,8 +28,8 @@ public class MyViewModel: ObservableObject{
                 case .failure(let error):
                     print("failed : \(error)")
                 }
-            } receiveValue: { _ in
-                
+            } receiveValue: { [weak self] _ in
+                self?.isExited = true
             }
             .store(in: &cancellables)
     }
@@ -44,8 +46,8 @@ public class MyViewModel: ObservableObject{
                 case .failure(let error):
                     print("failed : \(error)")
                 }
-            } receiveValue: { _ in
-                
+            } receiveValue: { [weak self] _ in
+                self?.isExited = true
             }
             .store(in: &cancellables)
     }

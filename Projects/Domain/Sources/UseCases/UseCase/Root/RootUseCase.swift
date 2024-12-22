@@ -18,4 +18,8 @@ final public class RootUseCase: RootUseCaseProtocol{
     public func authStateListener() -> AnyPublisher<Bool, Never> {
         repository.authStateListener()
     }
+
+    public func fetchCurrentUser() -> AnyPublisher<Bool, Never> {
+        repository.fetchCurrentUser()
+    }
 }

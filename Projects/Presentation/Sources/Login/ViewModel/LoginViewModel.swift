@@ -20,6 +20,7 @@ final public class LoginViewModel: ObservableObject{
     
     @Published var isSuccessedAppleLogin: Bool = false
     @Published var appleCredentialModel: AppleCredentialModel?
+    @Published var isSuccessedFirebaseLogin: Bool = false
     
     func signInWithApple(){
         useCase.signInWithApple()
@@ -63,8 +64,9 @@ final public class LoginViewModel: ObservableObject{
                 case .failure(let error):
                     print("에러 발생: \(error)")
                 }
-            }, receiveValue: { isSuccess in
+            }, receiveValue: { [weak self] isSuccess in
                 print("결과: \(isSuccess ? "성공" : "실패")")
+                self?.isSuccessedFirebaseLogin = true
             })
             .store(in: &cancellables)
     }

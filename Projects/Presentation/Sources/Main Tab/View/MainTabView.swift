@@ -26,7 +26,7 @@ public struct MainTabView: View {
                         Label("clips", systemImage: "star")
                     }
                     .tag(TabCase.clips)
-                MyPageView(viewModel: DIContainer.makeMyDIContainer(), router: rootRouter)
+                MyPageView(viewModel: DIContainer.makeMyDIContainer().makeMyViewModel(), router: rootRouter)
                     .tabItem{
                         Label("My", systemImage: "star.fill")
                     }
@@ -37,7 +37,7 @@ public struct MainTabView: View {
             }
             .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
             .navigationDestination(isPresented: $viewModel.isPresentSaveURL) {
-                SaveURLView(viewModel: DIContainer.makeSaveDIContainer(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+                SaveURLView(viewModel: DIContainer.makeSaveDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
                     .onAppear{
                         viewModel.isShowingSaveURLView = true
                     }

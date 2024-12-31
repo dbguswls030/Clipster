@@ -14,8 +14,9 @@ public protocol SaveUseCaseProtocol{
     func makeURLClip(model: URLClipModel) -> AnyPublisher<String?, Never>
     
     // MARK: Folder
-    func makeFolder() -> AnyPublisher<Bool, Never>
-    func fetchFolder() -> AnyPublisher<[FolderModel], Never>
+    func makeFolder() -> AnyPublisher<String, Error>
+    func saveFolderIdInUser(folderId: String) -> AnyPublisher<Void, Error>
+    func fetchFolder() -> AnyPublisher<[FolderModel], Error>
     func saveURLClip(folderId: String, URLClipId: String) -> AnyPublisher<Bool, Never>
 }
 

@@ -13,6 +13,7 @@ struct FolderModelDTO: Codable{
     let title: StringValue
     let subfolders: ArrayValue<StringValue>
     let URLs: ArrayValue<StringValue>
+    let uid: StringValue
     
     enum RootKey: String, CodingKey {
         case fields
@@ -23,13 +24,15 @@ struct FolderModelDTO: Codable{
         case title
         case subfolders
         case URLs
+        case uid
     }
     
-    init(id: String = UUID().uuidString, title: String, subfolders: [String], URLs: [String]) {
+    init(id: String = UUID().uuidString, title: String, subfolders: [String], URLs: [String], uid: String) {
         self.id = StringValue(value: id)
         self.title = StringValue(value: title)
         self.subfolders = ArrayValue(values: subfolders.map { StringValue(value: $0) })
         self.URLs = ArrayValue(values: URLs.map { StringValue(value: $0) })
+        self.uid = StringValue(value: uid)
     }
     
     init(from decoder: any Decoder) throws {
@@ -39,10 +42,12 @@ struct FolderModelDTO: Codable{
         self.title = try fieldContainer.decode(StringValue.self, forKey: .title)
         self.subfolders = try fieldContainer.decode(ArrayValue<StringValue>.self, forKey: .subfolders)
         self.URLs = try fieldContainer.decode(ArrayValue<StringValue>.self, forKey: .URLs)
+        self.uid = try fieldContainer.decode(StringValue.self, forKey: .uid)
     }
     
     func toEntity() -> FolderModel{
         return FolderModel(id: id.value,
-                           title: title.value)
+                           title: title.value,
+                           uid: uid.value)
     }
 }

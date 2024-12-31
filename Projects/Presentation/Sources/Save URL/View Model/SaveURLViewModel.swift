@@ -78,9 +78,17 @@ final public class SaveURLViewModel: ObservableObject{
             }.store(in: &cancellables)
         
         useCase.fetchFolder()
-            .sink{ [weak self] fetchModel in
+            .print()
+            .sink(receiveCompletion: { completion in
+                switch completion{
+                case .finished:
+                    print("FetchFolder 성공")
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }, receiveValue: { [weak self] fetchModel in
                 self?.folderHierachy = fetchModel
-            }
+            })
             .store(in: &cancellables)
     }
     
@@ -90,6 +98,7 @@ final public class SaveURLViewModel: ObservableObject{
     
     func makeURLClipModel() {
         isLoadingDuringSave = true
+        
         useCase.makeURLClip(model: URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
             .flatMap{ [weak self] URLClipId in
                 guard let self = self, let URLClipId = URLClipId else { return Just(false).eraseToAnyPublisher()}
@@ -105,14 +114,26 @@ final public class SaveURLViewModel: ObservableObject{
     func makeFolder(){
         isLoadingDuringMakeFolder = true
         useCase.makeFolder()
-            .flatMap{ [weak self] isSuccessed -> AnyPublisher<[FolderModel], Never> in
-                guard let self = self, isSuccessed else { return Just([]).eraseToAnyPublisher() }
+            .flatMap{ newFolderId -> AnyPublisher<Void, Error> in
+                return self.useCase.saveFolderIdInUser(folderId: newFolderId)
+            }
+            
+            .flatMap{ _ -> AnyPublisher<[FolderModel], Error> in
                 return self.useCase.fetchFolder()
             }
-            .sink{ [weak self] fetchModel in
-                self?.folderHierachy = fetchModel
-                self?.isLoadingDuringMakeFolder = false
-            }
+            .sink(receiveCompletion: { completion in
+                switch completion{
+                case .finished:
+                    print("success makeFolder")
+                case .failure(let error):
+                    self.isLoadingDuringMakeFolder = false
+                    print(error)
+                }
+            }, receiveValue: { [weak self] fetchModel in
+                guard let self = self else { return }
+                self.folderHierachy = fetchModel
+                self.isLoadingDuringMakeFolder = false
+            })
             .store(in: &cancellables)
     }
 }

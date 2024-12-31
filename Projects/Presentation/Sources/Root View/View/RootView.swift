@@ -15,14 +15,14 @@ public struct RootView: View {
     
     public init(DIContainer: DIContainerProtocol) {
         self.DIContainer = DIContainer
-        self._viewModel = StateObject(wrappedValue: DIContainer.makeRootDIContainer())
+        self._viewModel = StateObject(wrappedValue: DIContainer.makeRootDIContainer().makeRootViewModel())
     }
     
     public var body: some View {
         Group{
             switch rootRouter.currentRoute {
             case .login:
-                LoginView(viewModel: DIContainer.makeAuthDIContainer(), router: rootRouter)
+                LoginView(viewModel: DIContainer.makeAuthDIContainer().makeAuthViewModel(), router: rootRouter)
             case .mainTab:
                 MainTabView(DIContainer: DIContainer, router: rootRouter)
             }

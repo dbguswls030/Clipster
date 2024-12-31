@@ -98,3 +98,12 @@ struct Documents<T: Codable>: Codable {
         case documents
     }
 }
+
+struct QueryResultValue<T: Codable>: Codable {
+    let readTime: String?
+    let document: T?
+    
+    private enum FieldKeys: String, CodingKey {
+        case readTime, document
+    }
+}

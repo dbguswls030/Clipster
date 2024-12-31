@@ -15,8 +15,11 @@ enum SaveService {
     case makeURLClip(model: URLClipModelDTO)
     // MARK: Folder
     case makeFolder(documentId: String, model: FolderModelDTO)
-    case fetchFolder
+    case saveFolderIdInUser(uid: String, folderId: String)
+    case fetchMyFolder(folderIds: [String])
     case saveURLClip(folderId: String, URLClipId: String)
+    // MARK: In User
+    case fetchMyFolderIds(uid: String)
 }
 
 extension SaveService: TargetType{
@@ -35,9 +38,11 @@ extension SaveService: TargetType{
         switch self{
         case .fetchURLMetadata: ""
         case .makeFolder(let documentId, _): "/projects/\(projectId)/databases/(default)/documents/folders/\(documentId)"
-        case .fetchFolder: "/projects/\(projectId)/databases/(default)/documents/folders"
+        case .saveFolderIdInUser: "/projects/\(projectId)/databases/(default)/documents:commit"
+        case .fetchMyFolder: "/projects/\(projectId)/databases/(default)/documents/folders"
         case .makeURLClip(let model): "/projects/\(projectId)/databases/(default)/documents/URLs/\(model.id.value)"
         case .saveURLClip: "/projects/\(projectId)/databases/(default)/documents:commit"
+        case .fetchMyFolderIds(let uid): "/projects/\(projectId)/databases/(default)/documents/users/\(uid)"
         }
     }
     
@@ -46,8 +51,10 @@ extension SaveService: TargetType{
         case .fetchURLMetadata: .get
         case .makeURLClip: .patch
         case .makeFolder: .patch
-        case .fetchFolder: .get
+        case .saveFolderIdInUser: .post
+        case .fetchMyFolder: .get
         case .saveURLClip: .post
+        case .fetchMyFolderIds: .get
         }
     }
     
@@ -56,8 +63,10 @@ extension SaveService: TargetType{
         case .fetchURLMetadata: .requestPlain
         case .makeURLClip(let model): .requestJSONEncodable(["fields" : model])
         case .makeFolder(_, let model): .requestJSONEncodable(["fields" : model])
-        case .fetchFolder: .requestPlain
-        case .saveURLClip(let folderId, let URLClipId): .requestData(FirestoreQuery.addURLClipId(newURLClipId: URLClipId, targetField: "URLs", folderId: folderId)!)
+        case .saveFolderIdInUser(let uid, let folderId): .requestData(FirestoreQuery.addFolderIdInUser(newFolderId: folderId, uid: uid)!)
+        case .fetchMyFolder(let folderIds): .requestParameters(parameters: FirestoreQuery.foldersFilter(folderIds: folderIds), encoding: URLEncoding.queryString)
+        case .saveURLClip(let folderId, let URLClipId): .requestData(FirestoreQuery.addURLClipIdInFolder(newURLClipId: URLClipId, folderId: folderId)!)
+        case .fetchMyFolderIds: .requestPlain
         }
     }
     

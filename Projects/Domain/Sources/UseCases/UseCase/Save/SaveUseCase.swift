@@ -27,11 +27,15 @@ extension SaveUseCase{
 }
 extension SaveUseCase{
     // MARK: Folder
-    public func makeFolder() -> AnyPublisher<Bool, Never>{
+    public func makeFolder() -> AnyPublisher<String, Error>{
         repository.makeFolder()
     }
     
-    public func fetchFolder() -> AnyPublisher<[FolderModel], Never> {
+    public func saveFolderIdInUser(folderId: String) -> AnyPublisher<Void, Error> {
+        repository.saveFolderIdInUser(folderId: folderId)
+    }
+    
+    public func fetchFolder() -> AnyPublisher<[FolderModel], Error> {
         repository.fetchFolder()
     }
     public func saveURLClip(folderId: String, URLClipId: String) -> AnyPublisher<Bool, Never>{

@@ -8,7 +8,6 @@
 import Foundation
 
 public protocol SaveDIContainerProtocol{
-    func makeSaveDIContainer(clipBoardURL: String) -> SaveURLViewModel
-    func makeSaveDIContainer() -> SaveURLViewModel
-    
+    func makeSaveViewModel(clipBoardURL: String) -> SaveURLViewModel
+    func makeSaveViewModel() -> SaveURLViewModel
 }

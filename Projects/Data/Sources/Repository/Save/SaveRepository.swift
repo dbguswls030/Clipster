@@ -10,6 +10,14 @@ import Combine
 import Domain
 import Moya
 import CombineMoya
+import FirebaseAuth
+
+enum SaveError: Error{
+    case noUID
+    case failedMakeFolder
+    case notMoyaErrorType
+    case failedFetchFolder
+}
 
 final public class SaveRepository: SaveRepositoryProtocol{
     
@@ -59,20 +67,18 @@ extension SaveRepository{
 }
 extension SaveRepository{
     // MARK: Folder
-    public func makeFolder() -> AnyPublisher<Bool, Never>{
-        let newModel = FolderModelDTO(title: "무제", subfolders: [], URLs: [])
+    public func makeFolder() -> AnyPublisher<String, Error>{
+        guard let uid = Auth.auth().currentUser?.uid else { return Fail(error: SaveError.noUID).eraseToAnyPublisher() }
+        let newModel = FolderModelDTO(title: "무제", subfolders: [], URLs: [], uid: uid)
         return service.requestPublisher(.makeFolder(documentId: newModel.id.value, model: newModel))
-                .map { response in
-                    if response.statusCode == 200{
-                        print("success makeFolder")
-                        return true
-                    }else{
-                        print("fail makeFolder", response.statusCode)
-                        print(String(data: response.data, encoding: .utf8))
-                        return false
+                .tryMap { response in
+                    guard response.statusCode == 200 else{
+                        throw SaveError.failedMakeFolder
                     }
+                    return newModel.id.value
                 }
-                .catch { error in
+                .catch { error -> AnyPublisher<String, Error> in
+                    guard let error = error as? MoyaError else { return Fail(error: SaveError.notMoyaErrorType).eraseToAnyPublisher() }
                     switch error{
                     case .statusCode(let response):
                         print("Error Status Code: \(response.statusCode)")
@@ -82,19 +88,25 @@ extension SaveRepository{
                     default:
                         print("Unknown Error: \(error.localizedDescription)")
                     }
-                    return Just(false).eraseToAnyPublisher()
+                    return Fail(error: error).eraseToAnyPublisher()
                 }
                 .eraseToAnyPublisher()
     }
     
-    public func fetchFolder() -> AnyPublisher<[FolderModel], Never> {
-        return service.requestPublisher(.fetchFolder)
-            .tryMap{ response -> [FolderModel] in
-                let responseData = try JSONDecoder().decode(Documents<[FolderModelDTO]>.self, from: response.data)
-                return responseData.documents.map{$0.toEntity()}
+    public func saveFolderIdInUser(folderId: String) -> AnyPublisher<Void, Error> {
+        guard let uid = Auth.auth().currentUser?.uid else { return Fail(error: SaveError.noUID).eraseToAnyPublisher() }
+        return service.requestPublisher(.saveFolderIdInUser(uid: uid, folderId: folderId))
+            .tryMap{ response in
+                guard response.statusCode == 200 else {
+                    throw SaveError.failedMakeFolder
+                }
+                return ()
             }
-            .catch { error -> AnyPublisher<[FolderModel], Never> in
-                guard let error = error as? MoyaError else { return Just([]).eraseToAnyPublisher() }
+            .catch{ error -> AnyPublisher<Void, Error> in
+                guard let error = error as? MoyaError else { 
+                    print(error.localizedDescription)
+                    return Fail(error: SaveError.notMoyaErrorType).eraseToAnyPublisher()
+                }
                 switch error{
                 case .statusCode(let response):
                     print("Error Status Code: \(response.statusCode)")
@@ -104,9 +116,63 @@ extension SaveRepository{
                 default:
                     print("Unknown Error: \(error.localizedDescription)")
                 }
-                return Just([]).eraseToAnyPublisher()
+                return Fail(error: error).eraseToAnyPublisher()
+            }.eraseToAnyPublisher()
+    }
+    
+    public func fetchFolder() -> AnyPublisher<[FolderModel], Error> {
+        guard let uid = Auth.auth().currentUser?.uid else { return Fail(error: SaveError.noUID).eraseToAnyPublisher() }
+        return service.requestPublisher(.fetchMyFolderIds(uid: uid))
+            .tryMap{ response -> [String] in
+                let responseData = try JSONDecoder().decode(UserModelDTO.self, from: response.data)
+                return responseData.folders.arrayValue["values"]?.compactMap{$0.value} ?? []
+            }
+            .flatMap { foldersIds -> AnyPublisher<[FolderModel], Error> in
+                guard !foldersIds.isEmpty else { return Just([]).setFailureType(to: Error.self).eraseToAnyPublisher() }
+                return self.service.requestPublisher(.fetchMyFolder(folderIds: foldersIds))
+                    .tryMap{ response -> [FolderModel] in
+                        print("ㅎㅇ1")
+                        let responseData = try JSONDecoder().decode([QueryResultValue<FolderModelDTO>].self, from: response.data)
+                        print("ㅎㅇ2")
+//                        return responseData.documents.map{$0.toEntity()}
+                        return responseData.map{$0.document!.toEntity()}
+                    }.eraseToAnyPublisher()
+            }
+            .catch { error -> AnyPublisher<[FolderModel], Error> in
+                guard let error = error as? MoyaError else { return Fail(error: SaveError.notMoyaErrorType).eraseToAnyPublisher() }
+                switch error{
+                case .statusCode(let response):
+                    print("Error Status Code: \(response.statusCode)")
+                    if let message = String(data: response.data, encoding: .utf8) {
+                        print("Error Message: \(message)")
+                    }
+                default:
+                    print("Unknown Error: \(error.localizedDescription)")
+                }
+                return Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
+            
+        
+//        service.requestPublisher(.fetchMyFolder(folderIds: []))
+//            .tryMap{ response -> [FolderModel] in
+//                let responseData = try JSONDecoder().decode(Documents<[FolderModelDTO]>.self, from: response.data)
+//                return responseData.documents.map{$0.toEntity()}
+//            }
+//            .catch { error -> AnyPublisher<[FolderModel], Error> in
+//                guard let error = error as? MoyaError else { return Fail(error: SaveError.notMoyaErrorType).eraseToAnyPublisher() }
+//                switch error{
+//                case .statusCode(let response):
+//                    print("Error Status Code: \(response.statusCode)")
+//                    if let message = String(data: response.data, encoding: .utf8) {
+//                        print("Error Message: \(message)")
+//                    }
+//                default:
+//                    print("Unknown Error: \(error.localizedDescription)")
+//                }
+//                return Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
+//            }
+//            .eraseToAnyPublisher()
     }
     
     public func saveURLClip(folderId: String, URLClipId: String) -> AnyPublisher<Bool, Never> {

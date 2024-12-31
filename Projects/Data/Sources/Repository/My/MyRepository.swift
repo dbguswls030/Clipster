@@ -11,16 +11,24 @@ import Domain
 import FirebaseAuth
 import AuthenticationServices
 import CryptoKit
+import FirebaseFirestore
 
 enum MyError: Error{
     case logoutError
     case signoutError
     case reauthenticateError
 }
+
 final public class MyRepository: NSObject, MyRepositoryProtocol{
     
     private var currentNonce: String?
     private var onCompletion: ((Result<Void, Error>) -> Void)?
+    
+    private let db: Firestore
+
+    public init(db: Firestore = FirestoreManager.shared.db) {
+        self.db = db
+    }
     
     public func logout() -> AnyPublisher<Void, Error>{
         return Future{ promise in

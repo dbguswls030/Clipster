@@ -13,6 +13,7 @@ import CryptoKit
 import FirebaseAuth
 import Moya
 import CombineMoya
+import FirebaseFirestore
 
 enum AuthError: Error{
     case noUid
@@ -26,8 +27,14 @@ final public class AuthRepository: NSObject{
     private var currentNonce: String?
     private var onCompletion: ((Result<AppleCredentialModel, Error>) -> Void)?
     private let service = MoyaProvider<AuthService>()
-    public override init() {}
+    private let db: Firestore
+
+    public init(db: Firestore = FirestoreManager.shared.db) {
+        self.db = db
+    }
+    
     private var cancellable = Set<AnyCancellable>()
+    
 }
 
 extension AuthRepository: AuthRepositoryProtocol{

@@ -11,6 +11,7 @@ import Domain
 import Moya
 import CombineMoya
 import FirebaseAuth
+import FirebaseFirestore
 
 enum SaveError: Error{
     case noUID
@@ -22,7 +23,6 @@ enum SaveError: Error{
 final public class SaveRepository: SaveRepositoryProtocol{
     
     private let service = MoyaProvider<SaveService>()
-    public init() {}
     private var cancellable = Set<AnyCancellable>()
     
 //    private let service: MoyaProvider<SaveService>
@@ -30,6 +30,12 @@ final public class SaveRepository: SaveRepositoryProtocol{
 //        let plugin = NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
 //        service = MoyaProvider<SaveService>(plugins: [plugin])
 //    }
+    
+    private let db: Firestore
+
+    public init(db: Firestore = FirestoreManager.shared.db) {
+        self.db = db
+    }
 }
 extension SaveRepository{
     // MARK: URL

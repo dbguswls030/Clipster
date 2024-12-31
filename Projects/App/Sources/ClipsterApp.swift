@@ -8,7 +8,6 @@
 import SwiftUI
 import Presentation
 import Data
-import FirebaseAuth
 
 @main
 struct ClipsterApp: App {

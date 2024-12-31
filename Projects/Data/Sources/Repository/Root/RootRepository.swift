@@ -11,18 +11,8 @@ import Domain
 import FirebaseAuth
 
 final public class RootRepository: RootRepositoryProtocol{
-    private let authStateSubject = PassthroughSubject<Bool, Never>()
-    private var authStateListenerHandle: AuthStateDidChangeListenerHandle?
     
-    public init(){
-        authStateListenerHandle = Auth.auth().addStateDidChangeListener{ [weak self] _, user in
-            self?.authStateSubject.send(user != nil)
-        }
-    }
-    
-    public func authStateListener() -> AnyPublisher<Bool, Never>{
-        return authStateSubject.eraseToAnyPublisher()
-    }
+    public init(){ }
     
     public func fetchCurrentUser() -> AnyPublisher<Bool, Never> {
         return Future{ promise in
@@ -33,6 +23,5 @@ final public class RootRepository: RootRepositoryProtocol{
             }
         }
         .eraseToAnyPublisher()
-            
     }
 }

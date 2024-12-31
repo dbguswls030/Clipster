@@ -8,6 +8,5 @@
 import Foundation
 import Combine
 public protocol RootRepositoryProtocol {
-    func authStateListener() -> AnyPublisher<Bool, Never>
     func fetchCurrentUser() -> AnyPublisher<Bool, Never>
 }

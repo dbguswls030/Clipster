@@ -20,35 +20,29 @@ public class MyViewModel: ObservableObject{
     @Published var isExited: Bool = false
     
     func logout(){
-        useCase.logout()
-            .sink { completion in
-                switch completion{
-                case .finished:
-                    print("logout")
-                case .failure(let error):
-                    print("failed : \(error)")
+        Task{
+            do{
+                try await useCase.logout()
+                await MainActor.run {
+                    self.isExited = true
                 }
-            } receiveValue: { [weak self] _ in
-                self?.isExited = true
+            }catch{
+                print(error.localizedDescription)
             }
-            .store(in: &cancellables)
+        }
     }
     
     func signout(){
-        useCase.signout()
-            .tryMap{ [weak self] in
-                return self?.useCase.logout()
-            }
-            .sink { completion in
-                switch completion{
-                case .finished:
-                    print("signout & logout")
-                case .failure(let error):
-                    print("failed : \(error)")
+        Task{
+            do{
+                try await useCase.signout()
+                try await useCase.logout()
+                await MainActor.run {
+                    self.isExited = true
                 }
-            } receiveValue: { [weak self] _ in
-                self?.isExited = true
+            }catch{
+                print(error.localizedDescription)
             }
-            .store(in: &cancellables)
+        }
     }
 }

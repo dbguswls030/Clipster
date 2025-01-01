@@ -30,24 +30,19 @@ final public class MyRepository: NSObject, MyRepositoryProtocol{
         self.db = db
     }
     
-    public func logout() -> AnyPublisher<Void, Error>{
-        return Future{ promise in
-            let firebaseAuth = Auth.auth()
-            do {
-                try firebaseAuth.signOut()
-                promise(.success(()))
-            } catch let signOutError as NSError {
-                print("Error signing out: %@", signOutError)
-                promise(.failure(MyError.logoutError))
-            }
+    public func logout() async throws {
+        let firebaseAuth = Auth.auth()
+        do {
+            try firebaseAuth.signOut()
+        } catch {
+            throw error
         }
-        .eraseToAnyPublisher()
     }
 }
 
 extension MyRepository: ASAuthorizationControllerDelegate{
-    public func signout() -> AnyPublisher<Void, Error> {
-        return Future{ [weak self] promise in
+    public func signout() async throws {
+        return try await Future<Void, Error> { [weak self] promise in
             guard let self = self else { return }
             let nonce = self.randomNonceString()
             self.currentNonce = nonce
@@ -62,10 +57,15 @@ extension MyRepository: ASAuthorizationControllerDelegate{
             authorizationController.performRequests()
             
             self.onCompletion = { result in
-                promise(result)
+                switch result{
+                case .success:
+                    promise(.success(()))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
             }
         }
-        .eraseToAnyPublisher()
+        .value
     }
     
     public func authorizationController(controller: ASAuthorizationController,

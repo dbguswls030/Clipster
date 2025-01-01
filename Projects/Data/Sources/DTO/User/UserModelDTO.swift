@@ -9,27 +9,22 @@ import Foundation
 import Domain
 
 struct UserModelDTO: Codable{
-    let id: StringValue
-    let folders: ArrayValue<StringValue>
+    let id: String
+    let folders: [String]
     
-    enum RootKey: String, CodingKey {
-        case fields
-    }
-    
-    enum FieldKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey{
         case id
         case folders
     }
     
     init(id: String, folders: [String] = []) {
-        self.id = StringValue(value: id)
-        self.folders = ArrayValue(values: folders.map{StringValue(value:$0)})
+        self.id = id
+        self.folders = folders
     }
     
     init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: RootKey.self)
-        let fieldContainer = try container.nestedContainer(keyedBy: FieldKeys.self, forKey: .fields)
-        self.id = try fieldContainer.decode(StringValue.self, forKey: .id)
-        self.folders = try fieldContainer.decode(ArrayValue<StringValue>.self, forKey: .folders)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.folders = try container.decode([String].self, forKey: .folders)
     }
 }

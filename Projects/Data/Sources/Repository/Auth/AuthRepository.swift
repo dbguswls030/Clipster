@@ -46,7 +46,7 @@ extension AuthRepository: AuthRepositoryProtocol{
     
     public func createUser(uid: String) async throws{
         let model = UserModelDTO(id: uid)
-        let docRef = db.collection("users").document(model.id.value)
+        let docRef = db.collection("users").document(model.id)
         
         do{
             try docRef.setData(from: model)

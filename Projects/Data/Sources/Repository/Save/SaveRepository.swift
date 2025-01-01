@@ -131,7 +131,7 @@ extension SaveRepository{
         return service.requestPublisher(.fetchMyFolderIds(uid: uid))
             .tryMap{ response -> [String] in
                 let responseData = try JSONDecoder().decode(UserModelDTO.self, from: response.data)
-                return responseData.folders.arrayValue["values"]?.compactMap{$0.value} ?? []
+                return []
             }
             .flatMap { foldersIds -> AnyPublisher<[FolderModel], Error> in
                 guard !foldersIds.isEmpty else { return Just([]).setFailureType(to: Error.self).eraseToAnyPublisher() }

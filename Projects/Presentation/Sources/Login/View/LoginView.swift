@@ -17,8 +17,6 @@ public struct LoginView: View {
         self.rootRouter = router
     }
     
-    
-    
     public var body: some View {
         NavigationStack{
             VStack{

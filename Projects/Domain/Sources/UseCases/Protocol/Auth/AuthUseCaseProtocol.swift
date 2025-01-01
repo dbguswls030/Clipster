@@ -11,7 +11,7 @@ import AuthenticationServices
 
 public protocol AuthUseCaseProtocol{
     func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>
-    func signInWithFirebase(model: AppleCredentialModel) -> AnyPublisher<String, Error>
-    func checkIsExistedUser(uid: String) -> AnyPublisher<Bool, Error>
-    func createUser(uid: String) -> AnyPublisher<Void, Error>
+    func signInWithFirebase(model: AppleCredentialModel) async throws -> String
+    func checkIsExistedUser(uid: String) async throws -> Bool
+    func createUser(uid: String) async throws
 }

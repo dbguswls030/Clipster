@@ -11,8 +11,6 @@ import Domain
 import AuthenticationServices
 import CryptoKit
 import FirebaseAuth
-import Moya
-import CombineMoya
 import FirebaseFirestore
 
 enum AuthError: Error{
@@ -26,60 +24,47 @@ enum AuthError: Error{
 final public class AuthRepository: NSObject{
     private var currentNonce: String?
     private var onCompletion: ((Result<AppleCredentialModel, Error>) -> Void)?
-    private let service = MoyaProvider<AuthService>()
     private let db: Firestore
-
+    
     public init(db: Firestore = FirestoreManager.shared.db) {
         self.db = db
     }
     
     private var cancellable = Set<AnyCancellable>()
-    
 }
 
 extension AuthRepository: AuthRepositoryProtocol{
-    public func checkIsExistedUser(uid: String) -> AnyPublisher<Bool, Error>{
-        return service.requestPublisher(.checkIsExistedUser(uid: uid))
-            .map { response in
-                return response.statusCode == 200
-            }
-            .catch { _ in Just(false).setFailureType(to: Error.self) } // User does not exist
-            .eraseToAnyPublisher()
-    }
-    
-    public func createUser(uid: String) -> AnyPublisher<Void, Error>{
-        let model = UserModelDTO(id: uid)
-        return service.requestPublisher(.createUser(model: model))
-            .tryMap{ response in
-                guard response.statusCode == 200 else{
-                    throw AuthError.failedCreateUser
-                }
-            }
-            .catch{ error in
-                Fail(error: error).eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    public func signInWithFirebase(model: AppleCredentialModel) -> AnyPublisher<String, Error> {
-        return Future{ promise in
-            let credential = OAuthProvider.appleCredential(withIDToken: model.idTokenString,
-                                                           rawNonce: model.rawNonce,
-                                                           fullName: model.fullName)
-            Auth.auth().signIn(with: credential) { (authResult, error) in
-                if let error = error {
-                    print(error.localizedDescription)
-                    promise(.failure(AuthError.signInError))
-                    return
-                }
-                guard let uid = authResult?.user.uid else {
-                    promise(.failure(AuthError.noUid))
-                    return
-                }
-                promise(.success(uid))
-            }
+    public func checkIsExistedUser(uid: String) async throws -> Bool{
+        let docRef = db.collection("users").document(uid)
+        do{
+            let document = try await docRef.getDocument()
+            return document.exists
+        }catch{
+            throw error
         }
-        .eraseToAnyPublisher()
+    }
+    
+    public func createUser(uid: String) async throws{
+        let model = UserModelDTO(id: uid)
+        let docRef = db.collection("users").document(model.id.value)
+        
+        do{
+            try docRef.setData(from: model)
+        }catch{
+            throw error
+        }
+    }
+    
+    public func signInWithFirebase(model: AppleCredentialModel) async throws -> String{
+        let credential = OAuthProvider.appleCredential(withIDToken: model.idTokenString,
+                                                       rawNonce: model.rawNonce,
+                                                       fullName: model.fullName)
+        do{
+            let authResult = try await Auth.auth().signIn(with: credential)
+            return authResult.user.uid
+        }catch{
+            throw error
+        }
     }
 }
 
@@ -127,8 +112,8 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
             }
             
             self.onCompletion?(.success(AppleCredentialModel(idTokenString: idTokenString,
-                                                                 rawNonce: nonce,
-                                                                 fullName: fullName)))
+                                                             rawNonce: nonce,
+                                                             fullName: fullName)))
         }
     }
     

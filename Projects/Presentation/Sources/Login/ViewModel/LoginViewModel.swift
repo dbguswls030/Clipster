@@ -24,6 +24,7 @@ final public class LoginViewModel: ObservableObject{
     
     func signInWithApple(){
         useCase.signInWithApple()
+            .receive(on: DispatchQueue.main)
             .sink { completion in
                 switch completion{
                 case .failure(let error):
@@ -37,38 +38,20 @@ final public class LoginViewModel: ObservableObject{
             }
             .store(in: &cancellables)
     }
-    
+
     func signInWithFirebase(){
         guard let model = appleCredentialModel else { return }
-        useCase.signInWithFirebase(model: model)
-            .flatMap{ uid in
-                return self.useCase.checkIsExistedUser(uid: uid)
-                    .flatMap { isExisted -> AnyPublisher<Bool, Error> in
-                        if isExisted {
-                            // 사용자가 존재하면 true 반환
-                            return Just(true)
-                                .setFailureType(to: Error.self)
-                                .eraseToAnyPublisher()
-                        } else {
-                            // 사용자가 존재하지 않으면 새 사용자 생성 후 false 반환
-                            return self.useCase.createUser(uid: uid)
-                                .map { _ in true }
-                                .eraseToAnyPublisher()
-                        }
-                    }
-            }
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    print("완료")
-                case .failure(let error):
-                    print("에러 발생: \(error)")
+        Task{
+            do{
+                let uid = try await useCase.signInWithFirebase(model: model)
+                let isExist = try await useCase.checkIsExistedUser(uid: uid)
+                if !isExist{ try await useCase.createUser(uid: uid)}
+                await MainActor.run {
+                    self.isSuccessedFirebaseLogin = true
                 }
-            }, receiveValue: { [weak self] isSuccess in
-                print("결과: \(isSuccess ? "성공" : "실패")")
-                self?.isSuccessedFirebaseLogin = true
-            })
-            .store(in: &cancellables)
+            }catch{
+                print(error.localizedDescription)
+            }
+        }
     }
-
 }

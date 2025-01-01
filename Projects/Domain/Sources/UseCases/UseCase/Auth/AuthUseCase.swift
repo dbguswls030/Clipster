@@ -17,8 +17,8 @@ final public class AuthUseCase: AuthUseCaseProtocol{
         self.repository = repository
     }
     
-    public func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>{
-        repository.signInWithApple()
+    public func signInWithApple() async throws -> AppleCredentialModel{
+        try await repository.signInWithApple()
     }
 
     public func signInWithFirebase(model: AppleCredentialModel) async throws -> String{

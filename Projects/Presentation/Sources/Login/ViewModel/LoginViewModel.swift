@@ -23,20 +23,17 @@ final public class LoginViewModel: ObservableObject{
     @Published var isSuccessedFirebaseLogin: Bool = false
     
     func signInWithApple(){
-        useCase.signInWithApple()
-            .receive(on: DispatchQueue.main)
-            .sink { completion in
-                switch completion{
-                case .failure(let error):
-                    print(error.localizedDescription)
-                case .finished:
-                    break
+        Task{
+            do{
+                let model = try await useCase.signInWithApple()
+                await MainActor.run {
+                    self.appleCredentialModel = model
+                    self.isSuccessedAppleLogin = true
                 }
-            } receiveValue: { [weak self] model in
-                self?.appleCredentialModel = model
-                self?.isSuccessedAppleLogin = true
+            }catch{
+                print(error.localizedDescription)
             }
-            .store(in: &cancellables)
+        }
     }
 
     func signInWithFirebase(){

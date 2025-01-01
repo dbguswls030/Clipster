@@ -69,15 +69,15 @@ extension AuthRepository: AuthRepositoryProtocol{
 }
 
 extension AuthRepository: ASAuthorizationControllerDelegate{
-    public func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>{
-        return Future{ [weak self] promise in
+    public func signInWithApple() async throws -> AppleCredentialModel {
+        return try await Future<AppleCredentialModel, Error> { [weak self] promise in
             guard let self = self else { return }
             let appleIDProvider = ASAuthorizationAppleIDProvider()
             let request = appleIDProvider.createRequest()
             let nonce = self.randomNonceString()
             self.currentNonce = nonce
-            request.requestedScopes = [.fullName, .email] //유저로 부터 알 수 있는 정보들(name, email)
-            request.nonce = sha256(nonce)
+            request.requestedScopes = [.fullName, .email]
+            request.nonce = self.sha256(nonce)
             
             let authorizationController = ASAuthorizationController(authorizationRequests: [request])
             authorizationController.delegate = self
@@ -85,10 +85,15 @@ extension AuthRepository: ASAuthorizationControllerDelegate{
             authorizationController.performRequests()
             
             self.onCompletion = { result in
-                promise(result)
+                switch result {
+                case .success(let credential):
+                    promise(.success(credential))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
             }
         }
-        .eraseToAnyPublisher()
+        .value
     }
     
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {

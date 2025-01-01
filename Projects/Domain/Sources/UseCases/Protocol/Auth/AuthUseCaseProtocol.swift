@@ -10,7 +10,7 @@ import Combine
 import AuthenticationServices
 
 public protocol AuthUseCaseProtocol{
-    func signInWithApple() -> AnyPublisher<AppleCredentialModel, Error>
+    func signInWithApple() async throws -> AppleCredentialModel
     func signInWithFirebase(model: AppleCredentialModel) async throws -> String
     func checkIsExistedUser(uid: String) async throws -> Bool
     func createUser(uid: String) async throws

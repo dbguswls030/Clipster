@@ -17,28 +17,25 @@ final public class SaveUseCase: SaveUseCaseProtocol{
 }
 extension SaveUseCase{
     // MARK: URL
-    public func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never> {
-        repository.fetchMetaData(url: url)
+    public func fetchMetaData(url: URL) async throws -> URLMetaData?{
+        try await repository.fetchMetaData(url: url)
     }
     
-    public func makeURLClip(model: URLClipModel) -> AnyPublisher<String?, Never> {
-        repository.makeURLClip(model: model)
+    public func makeURLClip(model: URLClipModel) async throws -> String{
+        try await repository.makeURLClip(model: model)
     }
 }
 extension SaveUseCase{
     // MARK: Folder
-    public func makeFolder() -> AnyPublisher<String, Error>{
-        repository.makeFolder()
+    public func makeFolder() async throws{
+        try await repository.makeFolder()
     }
     
-    public func saveFolderIdInUser(folderId: String) -> AnyPublisher<Void, Error> {
-        repository.saveFolderIdInUser(folderId: folderId)
+    public func fetchFolder() async throws -> [FolderModel]{
+        try await repository.fetchFolder()
     }
     
-    public func fetchFolder() -> AnyPublisher<[FolderModel], Error> {
-        repository.fetchFolder()
-    }
-    public func saveURLClip(folderId: String, URLClipId: String) -> AnyPublisher<Bool, Never>{
-        repository.saveURLClip(folderId: folderId, URLClipId: URLClipId)
+    public func saveURLClip(folderId: String, URLClipId: String) async throws{
+        try await repository.saveURLClip(folderId: folderId, URLClipId: URLClipId)
     }
 }

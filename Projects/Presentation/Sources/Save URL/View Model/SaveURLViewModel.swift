@@ -42,8 +42,6 @@ final public class SaveURLViewModel: ObservableObject{
     @Published var expandedFolders: Set<String> = []
     @Published var description: String = ""
     
-    
-    
     @Published var isSaved: Bool = false
     @Published var isLoadingDuringSave: Bool = false
     @Published var isLoadingDuringMakeFolder: Bool = false
@@ -53,18 +51,11 @@ final public class SaveURLViewModel: ObservableObject{
             .debounce(for: 1, scheduler: RunLoop.main)
             .map{URL(string: $0)}
             .removeDuplicates()
-            .flatMap{ url in
-                if let validURL = url{
-                    return self.useCase.fetchMetaData(url: validURL)
-                }else{
-                    return Just(nil).eraseToAnyPublisher()
+            .sink(receiveValue: { [weak self] url in
+                if let validURL = url {
+                    self?.fetchURLMetaData(url: validURL)
                 }
-            }
-            .receive(on: RunLoop.main)
-            .sink { [weak self] metaData in
-                self?.isLoadingForTextField = false
-                self?.metaData = metaData
-            }
+            })
             .store(in: &cancellables)
         
         $metaData
@@ -77,19 +68,21 @@ final public class SaveURLViewModel: ObservableObject{
                 }
             }.store(in: &cancellables)
         
-        useCase.fetchFolder()
-            .print()
-            .sink(receiveCompletion: { completion in
-                switch completion{
-                case .finished:
-                    print("FetchFolder 성공")
-                case .failure(let error):
-                    print(error.localizedDescription)
+        fetchFolders()
+    }
+    
+    private func fetchURLMetaData(url: URL){
+        Task{
+            do{
+                let metaData = try await useCase.fetchMetaData(url: url)
+                await MainActor.run {
+                    self.metaData = metaData
+                    self.isLoadingForTextField = false
                 }
-            }, receiveValue: { [weak self] fetchModel in
-                self?.folderHierachy = fetchModel
-            })
-            .store(in: &cancellables)
+            }catch{
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func isAbleToSave() -> Bool{
@@ -98,42 +91,53 @@ final public class SaveURLViewModel: ObservableObject{
     
     func makeURLClipModel() {
         isLoadingDuringSave = true
-        
-        useCase.makeURLClip(model: URLClipModel(folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!))
-            .flatMap{ [weak self] URLClipId in
-                guard let self = self, let URLClipId = URLClipId else { return Just(false).eraseToAnyPublisher()}
-                return self.useCase.saveURLClip(folderId: selectedFolder!, URLClipId: URLClipId)
+        Task{
+            do{
+                let newModel = URLClipModel(uid: UUID().uuidString, folderId: selectedFolder!, URL: URL(string: url)!, description: description, metaData: metaData!)
+                let URLClipId = try await useCase.makeURLClip(model: newModel)
+                try await useCase.saveURLClip(folderId: selectedFolder!, URLClipId: URLClipId)
+                
+                await MainActor.run {
+                    self.isLoadingDuringSave = false
+                    self.isSaved = true
+                }
+            }catch{
+                print(error.localizedDescription)
+                await MainActor.run {
+                    self.isLoadingDuringSave = false
+                }
             }
-            .sink{ [weak self] bool in
-                self?.isSaved = bool
-                self?.isLoadingDuringSave = false
+        }
+    }
+    
+    func fetchFolders(){
+        Task{
+            do{
+                let folders = try await useCase.fetchFolder()
+                await MainActor.run {
+                    self.folderHierachy = folders
+                }
+            }catch{
+                print(error.localizedDescription)
             }
-            .store(in: &cancellables)
+        }
     }
     
     func makeFolder(){
-        isLoadingDuringMakeFolder = true
-        useCase.makeFolder()
-            .flatMap{ newFolderId -> AnyPublisher<Void, Error> in
-                return self.useCase.saveFolderIdInUser(folderId: newFolderId)
-            }
-            
-            .flatMap{ _ -> AnyPublisher<[FolderModel], Error> in
-                return self.useCase.fetchFolder()
-            }
-            .sink(receiveCompletion: { completion in
-                switch completion{
-                case .finished:
-                    print("success makeFolder")
-                case .failure(let error):
+        self.isLoadingDuringMakeFolder = true
+        Task{
+            do{
+                try await useCase.makeFolder()
+                let folders = try await useCase.fetchFolder()
+                await MainActor.run {
                     self.isLoadingDuringMakeFolder = false
-                    print(error)
+                    self.folderHierachy = folders
                 }
-            }, receiveValue: { [weak self] fetchModel in
-                guard let self = self else { return }
-                self.folderHierachy = fetchModel
-                self.isLoadingDuringMakeFolder = false
-            })
-            .store(in: &cancellables)
+            }catch{
+                await MainActor.run {
+                    self.isLoadingDuringMakeFolder = false
+                }
+            }
+        }
     }
 }

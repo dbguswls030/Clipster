@@ -40,11 +40,10 @@ extension SaveRepository{
     }
 
     public func makeURLClip(model: URLClipModel) async throws -> String{
-        let uid = Auth.auth().currentUser!.uid
-        let newModel = URLClipModelDTO(model: model)
-        let docRef = db.collection("URLs").document(model.id)
         do{
-            
+            let uid = Auth.auth().currentUser!.uid
+            let newModel = URLClipModelDTO(model: model)
+            let docRef = db.collection("URLs").document(model.id)
             try docRef.setData(from: newModel)
             return newModel.id
         }catch{

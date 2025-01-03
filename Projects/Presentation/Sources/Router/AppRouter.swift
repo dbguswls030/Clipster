@@ -8,5 +8,5 @@
 import Foundation
 
 public class AppRouter: ObservableObject{
-    @Published var currentRoute: AppRoute = .login
+    @Published var currentRoute: AppRoute = .empty
 }

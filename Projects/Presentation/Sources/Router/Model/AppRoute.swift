@@ -10,4 +10,5 @@ import Foundation
 enum AppRoute{
     case login
     case mainTab
+    case empty
 }

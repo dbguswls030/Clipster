@@ -10,8 +10,6 @@ import Domain
 import Combine
 
 final public class LoginViewModel: ObservableObject{
-    private var cancellables = Set<AnyCancellable>()
-    
     private let useCase: AuthUseCaseProtocol
     
     public init(useCase: AuthUseCaseProtocol){

@@ -29,8 +29,6 @@ final public class AuthRepository: NSObject{
     public init(db: Firestore = FirestoreManager.shared.db) {
         self.db = db
     }
-    
-    private var cancellable = Set<AnyCancellable>()
 }
 
 extension AuthRepository: AuthRepositoryProtocol{

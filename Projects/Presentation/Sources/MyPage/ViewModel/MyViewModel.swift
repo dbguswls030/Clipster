@@ -10,7 +10,6 @@ import Combine
 import Domain
 
 public class MyViewModel: ObservableObject{
-    private var cancellables = Set<AnyCancellable>()
     let useCase: MyUseCaseProtocol
     
     public init(useCase: MyUseCaseProtocol) {

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 import Domain
 import FirebaseAuth
 import FirebaseFirestore
@@ -19,8 +18,6 @@ enum SaveError: Error{
 }
 
 final public class SaveRepository: SaveRepositoryProtocol{
-    private var cancellable = Set<AnyCancellable>()
-    
     private let db: Firestore
 
     public init(db: Firestore = FirestoreManager.shared.db) {
@@ -41,7 +38,6 @@ extension SaveRepository{
 
     public func makeURLClip(model: URLClipModel) async throws -> String{
         do{
-            let uid = Auth.auth().currentUser!.uid
             let newModel = URLClipModelDTO(model: model)
             let docRef = db.collection("URLs").document(model.id)
             try docRef.setData(from: newModel)

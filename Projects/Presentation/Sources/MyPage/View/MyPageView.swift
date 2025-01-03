@@ -9,9 +9,11 @@ import SwiftUI
 
 public struct MyPageView: View {
     @StateObject var viewModel: MyViewModel
+    @ObservedObject var rootRouter = AppRouter()
     
-    public init(viewModel: MyViewModel) {
+    public init(viewModel: MyViewModel, router: AppRouter) {
         self._viewModel = StateObject(wrappedValue: viewModel)
+        self.rootRouter = router
     }
     
     public var body: some View {
@@ -27,6 +29,9 @@ public struct MyPageView: View {
             } label: {
                 Text("회원탈퇴")
             }
+        }
+        .onChange(of: viewModel.isExited) { newValue in
+            if newValue { rootRouter.currentRoute = .login }
         }
     }
 }

@@ -7,60 +7,61 @@
 
 import Foundation
 import Domain
+import FirebaseFirestore
 
 struct URLClipModelDTO: Codable{
-    public let id: StringValue
-    public let folderId: StringValue
-    public let URL: StringValue
-    public let description: StringValue
-    public let metaData: MapValue
-    public let createDate: TimeStampValue
+    public let id: String
+    public let uid: String
+    public let folderId: String
+    public let URL: String
+    public let description: String
+    public let metaData: [String: String]
+    public let createAt: Timestamp
     
-    enum RootKey: String, CodingKey {
-        case fields
-    }
-    
-    enum FieldKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case id
+        case uid
         case folderId
         case URL
         case description
         case metaData
-        case createDate
+        case createAt
     }
     
     init(model: URLClipModel) {
-        self.id = StringValue(value: model.id)
-        self.folderId = StringValue(value: model.folderId)
-        self.URL = StringValue(value: model.URL.absoluteString)
-        self.description = StringValue(value: model.description)
-        self.metaData = MapValue(value:
-                                    FieldValue(value: [
-                                        "title" : StringValue(value: model.metaData.title ?? ""),
-                                        "description" : StringValue(value: model.metaData.description ?? ""),
-                                        "thumbnailImageURL" : StringValue(value: model.metaData.thumbnailImageURL?.absoluteString ?? "")
-                                    ]))
-        self.createDate = TimeStampValue(value: ISO8601DateFormatter().string(from: Date()))
+        self.id = model.id
+        self.uid = model.uid
+        self.folderId = model.folderId
+        self.URL = model.URL.absoluteString
+        self.description = model.description
+        self.metaData = [
+            "title" : model.metaData.title ?? "",
+            "description" : model.metaData.description ?? "",
+            "thumbnailImageURL" : model.metaData.thumbnailImageURL?.absoluteString ?? ""
+        ]
+        self.createAt = Timestamp(date: Date())
     }
     
     init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: RootKey.self)
-        let fieldContainer = try container.nestedContainer(keyedBy: FieldKeys.self, forKey: .fields)
-        self.id = try fieldContainer.decode(StringValue.self, forKey: .id)
-        self.folderId = try fieldContainer.decode(StringValue.self, forKey: .folderId)
-        self.URL = try fieldContainer.decode(StringValue.self, forKey: .URL)
-        self.description = try fieldContainer.decode(StringValue.self, forKey: .description)
-        self.metaData = try fieldContainer.decode(MapValue.self, forKey: .metaData)
-        self.createDate = try fieldContainer.decode(TimeStampValue.self, forKey: .createDate)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.uid = try container.decode(String.self, forKey: .uid)
+        self.folderId = try container.decode(String.self, forKey: .folderId)
+        self.URL = try container.decode(String.self, forKey: .URL)
+        self.description = try container.decode(String.self, forKey: .description)
+        self.metaData = try container.decode([String : String].self, forKey: .metaData)
+        self.createAt = try container.decode(Timestamp.self, forKey: .createAt)
     }
     
     func toEntity() -> URLClipModel{
-        return URLClipModel(id: id.value,
-                            folderId: folderId.value,
-                            URL: Foundation.URL(string: URL.value)!,
-                            description: description.value,
-                            metaData: URLMetaData(title: metaData.value.fields["title"]?.value,
-                                                  description: metaData.value.fields["description"]?.value,
-                                                  thumbnailImageURL: metaData.value.fields["thumbnailImageURL"].flatMap{ Foundation.URL(string: $0.value)}))
+        return URLClipModel(id: id,
+                            uid: uid,
+                            folderId: folderId,
+                            URL: Foundation.URL(string: URL)!,
+                            description: description,
+                            metaData: URLMetaData(title: metaData["title"],
+                                                  description: metaData["description"],
+                                                  thumbnailImageURL: metaData["thumbnailImageURL"].flatMap{ Foundation.URL(string: $0)}),
+                            createAt: createAt.dateValue())
     }
 }

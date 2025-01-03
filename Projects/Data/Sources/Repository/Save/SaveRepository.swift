@@ -6,134 +6,86 @@
 //
 
 import Foundation
-import Combine
 import Domain
-import Moya
-import CombineMoya
+import FirebaseAuth
+import FirebaseFirestore
+
+enum SaveError: Error{
+    case noUID
+    case failedMakeFolder
+    case notMoyaErrorType
+    case failedFetchFolder
+}
 
 final public class SaveRepository: SaveRepositoryProtocol{
-    
-    private let service = MoyaProvider<SaveService>()
-    public init() {}
-    private var cancellable = Set<AnyCancellable>()
-    
-//    private let service: MoyaProvider<SaveService>
-//    public init() {
-//        let plugin = NetworkLoggerPlugin(configuration: .init(logOptions: .verbose))
-//        service = MoyaProvider<SaveService>(plugins: [plugin])
-//    }
+    private let db: Firestore
+
+    public init(db: Firestore = FirestoreManager.shared.db) {
+        self.db = db
+    }
 }
 extension SaveRepository{
     // MARK: URL
-    public func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never> {
-        return service.requestPublisher(.fetchURLMetadata(url: url))
-            .tryMap{ response in
-                let html = String(data: response.data, encoding: .utf8) ?? ""
-                return try? URLMetaDataResponseDTO.parseHTML(html)
-            }
-            .replaceError(with: nil)
-            .eraseToAnyPublisher()
+    public func fetchMetaData(url: URL) async throws -> URLMetaData?{
+        do{
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let html = String(data: data, encoding: .utf8) ?? ""
+            return try? URLMetaDataResponseDTO.parseHTML(html)
+        }catch{
+            throw error
+        }
     }
-    
-    public func makeURLClip(model: URLClipModel) -> AnyPublisher<String?, Never> {
-        let newModel = URLClipModelDTO(model: model)
-        return service.requestPublisher(.makeURLClip(model: newModel))
-            .map{ _ in
-                return newModel.id.value
-            }
-            .catch { error -> AnyPublisher<String?, Never> in
-                switch error{
-                case .statusCode(let response):
-                    print("Error Status Code: \(response.statusCode)")
-                    if let message = String(data: response.data, encoding: .utf8) {
-                        print("Error Message: \(message)")
-                    }
-                default:
-                    print("Unknown Error: \(error.localizedDescription)")
-                }
-                return Just(nil).eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+
+    public func makeURLClip(model: URLClipModel) async throws -> String{
+        do{
+            let newModel = URLClipModelDTO(model: model)
+            let docRef = db.collection("URLs").document(model.id)
+            try docRef.setData(from: newModel)
+            return newModel.id
+        }catch{
+            throw error
+        }
     }
-    
 }
 extension SaveRepository{
     // MARK: Folder
-    public func makeFolder() -> AnyPublisher<Bool, Never>{
-        let newModel = FolderModelDTO(title: "무제", subfolders: [], URLs: [])
-        return service.requestPublisher(.makeFolder(documentId: newModel.id.value, model: newModel))
-                .map { response in
-                    if response.statusCode == 200{
-                        print("success makeFolder")
-                        return true
-                    }else{
-                        print("fail makeFolder", response.statusCode)
-                        print(String(data: response.data, encoding: .utf8))
-                        return false
-                    }
-                }
-                .catch { error in
-                    switch error{
-                    case .statusCode(let response):
-                        print("Error Status Code: \(response.statusCode)")
-                        if let message = String(data: response.data, encoding: .utf8) {
-                            print("Error Message: \(message)")
-                        }
-                    default:
-                        print("Unknown Error: \(error.localizedDescription)")
-                    }
-                    return Just(false).eraseToAnyPublisher()
-                }
-                .eraseToAnyPublisher()
+    public func makeFolder() async throws{
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            let newFolder = FolderModelDTO(title: "무제", subfolders: [], URLs: [], uid: uid)
+            let docRef = db.collection("users").document(uid).collection("folders").document(newFolder.id)
+            try docRef.setData(from: newFolder)
+        }catch{
+            throw error
+        }
     }
     
-    public func fetchFolder() -> AnyPublisher<[FolderModel], Never> {
-        return service.requestPublisher(.fetchFolder)
-            .tryMap{ response -> [FolderModel] in
-                let responseData = try JSONDecoder().decode(Documents<[FolderModelDTO]>.self, from: response.data)
-                return responseData.documents.map{$0.toEntity()}
+    public func fetchFolder() async throws -> [FolderModel]{
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            let docRef = db.collection("users").document(uid).collection("folders")
+            let querySnapshot = try await docRef.getDocuments()
+            var folders = [FolderModel]()
+            
+            for document in querySnapshot.documents{
+                let model = try document.data(as: FolderModelDTO.self).toEntity()
+                folders.append(model)
             }
-            .catch { error -> AnyPublisher<[FolderModel], Never> in
-                guard let error = error as? MoyaError else { return Just([]).eraseToAnyPublisher() }
-                switch error{
-                case .statusCode(let response):
-                    print("Error Status Code: \(response.statusCode)")
-                    if let message = String(data: response.data, encoding: .utf8) {
-                        print("Error Message: \(message)")
-                    }
-                default:
-                    print("Unknown Error: \(error.localizedDescription)")
-                }
-                return Just([]).eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+            return folders
+        }catch{
+            throw error
+        }
     }
     
-    public func saveURLClip(folderId: String, URLClipId: String) -> AnyPublisher<Bool, Never> {
-        return service.requestPublisher(.saveURLClip(folderId: folderId, URLClipId: URLClipId))
-            .tryMap { response in
-                if response.statusCode == 200{
-                    print("success saveURLClip")
-                    return true
-                }else{
-                    print("fail saveURLClip", response.statusCode)
-                    print(String(data: response.data, encoding: .utf8))
-                    return false
-                }
-            }
-            .catch { error -> AnyPublisher<Bool, Never> in
-                guard let error = error as? MoyaError else { return Just(false).eraseToAnyPublisher() }
-                switch error{
-                case .statusCode(let response):
-                    print("Error Status Code: \(response.statusCode)")
-                    if let message = String(data: response.data, encoding: .utf8) {
-                        print("Error Message: \(message)")
-                    }
-                default:
-                    print("Unknown Error: \(error.localizedDescription)")
-                }
-                return Just(false).eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
+    public func saveURLClip(folderId: String, URLClipId: String) async throws{
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            let docRef = db.collection("users").document(uid).collection("folders").document(folderId)
+            try await docRef.updateData([
+                "URLs" : FirebaseFirestore.FieldValue.arrayUnion([URLClipId])
+            ])
+        }catch{
+            throw error
+        }
     }
 }

@@ -7,9 +7,9 @@
 
 import Foundation
 
-public protocol DIContainerProtocol: AuthDIContainerProtocol,
-                                     SaveDIContainerProtocol,
-                                     MyDIContainerProtocol,
-                                     RootDIContainerProtocol{
-    
+public protocol DIContainerProtocol{
+    func makeAuthDIContainer() -> AuthDIContainerProtocol
+    func makeRootDIContainer() -> RootDIContainerProtocol
+    func makeMyDIContainer() -> MyDIContainerProtocol
+    func makeSaveDIContainer() -> SaveDIContainerProtocol
 }

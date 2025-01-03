@@ -6,8 +6,7 @@
 //
 
 import Foundation
-import Combine
 
 public protocol RootUseCaseProtocol {
-    func authStateListener() -> AnyPublisher<Bool, Never>
+    func fetchCurrentUser() async -> Bool
 }

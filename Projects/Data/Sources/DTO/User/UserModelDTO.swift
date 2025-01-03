@@ -9,11 +9,18 @@ import Foundation
 import Domain
 
 struct UserModelDTO: Codable{
-    let id: StringValue
-    let folders: ArrayValue<StringValue>
+    let id: String
     
-    init(id: String, folders: [String] = []) {
-        self.id = StringValue(value: id)
-        self.folders = ArrayValue(values: folders.map{StringValue(value:$0)})
+    enum CodingKeys: String, CodingKey{
+        case id
+    }
+    
+    init(id: String) {
+        self.id = id
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
     }
 }

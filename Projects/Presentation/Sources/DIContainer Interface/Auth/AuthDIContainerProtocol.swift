@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol AuthDIContainerProtocol{
-    func makeAuthDIContainer() -> LoginViewModel
+    func makeAuthViewModel() -> LoginViewModel
 }

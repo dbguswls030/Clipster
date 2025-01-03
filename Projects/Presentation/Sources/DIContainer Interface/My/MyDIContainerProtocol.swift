@@ -8,5 +8,5 @@
 import Foundation
 
 public protocol MyDIContainerProtocol {
-    func makeMyDIContainer() -> MyViewModel
+    func makeMyViewModel() -> MyViewModel
 }

@@ -10,11 +10,12 @@ import SwiftUI
 public struct MainTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = MainTabViewModel()
-    
+    @ObservedObject var rootRouter = AppRouter()
     let DIContainer: DIContainerProtocol
     
-    public init(DIContainer: DIContainerProtocol) {
+    public init(DIContainer: DIContainerProtocol, router: AppRouter) {
         self.DIContainer = DIContainer
+        self.rootRouter = router
     }
     
     public var body: some View {
@@ -25,7 +26,7 @@ public struct MainTabView: View {
                         Label("clips", systemImage: "star")
                     }
                     .tag(TabCase.clips)
-                MyPageView(viewModel: DIContainer.makeMyDIContainer())
+                MyPageView(viewModel: DIContainer.makeMyDIContainer().makeMyViewModel(), router: rootRouter)
                     .tabItem{
                         Label("My", systemImage: "star.fill")
                     }
@@ -36,7 +37,7 @@ public struct MainTabView: View {
             }
             .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
             .navigationDestination(isPresented: $viewModel.isPresentSaveURL) {
-                SaveURLView(viewModel: DIContainer.makeSaveDIContainer(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+                SaveURLView(viewModel: DIContainer.makeSaveDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
                     .onAppear{
                         viewModel.isShowingSaveURLView = true
                     }

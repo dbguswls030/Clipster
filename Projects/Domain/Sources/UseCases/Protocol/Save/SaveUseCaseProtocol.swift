@@ -6,16 +6,15 @@
 //
 
 import Foundation
-import Combine
 
 public protocol SaveUseCaseProtocol{
     // MARK: URL
-    func fetchMetaData(url: URL) -> AnyPublisher<URLMetaData?, Never>
-    func makeURLClip(model: URLClipModel) -> AnyPublisher<String?, Never>
+    func fetchMetaData(url: URL) async throws -> URLMetaData?
+    func makeURLClip(model: URLClipModel) async throws -> String
     
     // MARK: Folder
-    func makeFolder() -> AnyPublisher<Bool, Never>
-    func fetchFolder() -> AnyPublisher<[FolderModel], Never>
-    func saveURLClip(folderId: String, URLClipId: String) -> AnyPublisher<Bool, Never>
+    func makeFolder() async throws
+    func fetchFolder() async throws -> [FolderModel]
+    func saveURLClip(folderId: String, URLClipId: String) async throws
 }
 

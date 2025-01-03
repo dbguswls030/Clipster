@@ -14,42 +14,19 @@ final public class DIContainer: DIContainerProtocol{
     
     public init(){ }
     
-}
-
-extension DIContainer: SaveDIContainerProtocol{
-    public func makeSaveDIContainer(clipBoardURL: String) -> SaveURLViewModel{
-        let repository = SaveRepository()
-        let useCase = SaveUseCase(repository: repository)
-        return SaveURLViewModel(useCase: useCase, clipBoradURL: clipBoardURL)
+    public func makeAuthDIContainer() -> AuthDIContainerProtocol {
+        return AuthDIContainer()
     }
     
-    public func makeSaveDIContainer() -> SaveURLViewModel {
-        let repository = SaveRepository()
-        let useCase = SaveUseCase(repository: repository)
-        return SaveURLViewModel(useCase: useCase)
+    public func makeMyDIContainer() -> MyDIContainerProtocol {
+        return MyDIContainer()
     }
-}
-
-extension DIContainer: AuthDIContainerProtocol{
-    public func makeAuthDIContainer() -> LoginViewModel {
-        let repository = AuthRepository()
-        let useCase = AuthUseCase(repository: repository)
-        return LoginViewModel(useCase: useCase)
+    
+    public func makeRootDIContainer() -> RootDIContainerProtocol {
+        return RootDIContainer()
     }
-}
-
-extension DIContainer: MyDIContainerProtocol{
-    public func makeMyDIContainer() -> MyViewModel {
-        let repository = MyRepository()
-        let useCase = MyUseCase(repository: repository)
-        return MyViewModel(useCase: useCase)
-    }
-}
-
-extension DIContainer: RootDIContainerProtocol{
-    public func makeRootDIContainer() -> RootViewModel {
-        let repository = RootRepository()
-        let useCase = RootUseCase(repository: repository)
-        return RootViewModel(useCase: useCase)
+    
+    public func makeSaveDIContainer() -> SaveDIContainerProtocol {
+        return SaveDIContainer()
     }
 }

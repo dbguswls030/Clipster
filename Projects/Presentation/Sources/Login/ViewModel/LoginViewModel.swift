@@ -10,8 +10,6 @@ import Domain
 import Combine
 
 final public class LoginViewModel: ObservableObject{
-    private var cancellables = Set<AnyCancellable>()
-    
     private let useCase: AuthUseCaseProtocol
     
     public init(useCase: AuthUseCaseProtocol){
@@ -20,52 +18,35 @@ final public class LoginViewModel: ObservableObject{
     
     @Published var isSuccessedAppleLogin: Bool = false
     @Published var appleCredentialModel: AppleCredentialModel?
+    @Published var isSuccessedFirebaseLogin: Bool = false
     
     func signInWithApple(){
-        useCase.signInWithApple()
-            .sink { completion in
-                switch completion{
-                case .failure(let error):
-                    print(error.localizedDescription)
-                case .finished:
-                    break
+        Task{
+            do{
+                let model = try await useCase.signInWithApple()
+                await MainActor.run {
+                    self.appleCredentialModel = model
+                    self.isSuccessedAppleLogin = true
                 }
-            } receiveValue: { [weak self] model in
-                self?.appleCredentialModel = model
-                self?.isSuccessedAppleLogin = true
+            }catch{
+                print(error.localizedDescription)
             }
-            .store(in: &cancellables)
+        }
     }
-    
+
     func signInWithFirebase(){
         guard let model = appleCredentialModel else { return }
-        useCase.signInWithFirebase(model: model)
-            .flatMap{ uid in
-                return self.useCase.checkIsExistedUser(uid: uid)
-                    .flatMap { isExisted -> AnyPublisher<Bool, Error> in
-                        if isExisted {
-                            // 사용자가 존재하면 true 반환
-                            return Just(true)
-                                .setFailureType(to: Error.self)
-                                .eraseToAnyPublisher()
-                        } else {
-                            // 사용자가 존재하지 않으면 새 사용자 생성 후 false 반환
-                            return self.useCase.createUser(uid: uid)
-                                .map { _ in true }
-                                .eraseToAnyPublisher()
-                        }
-                    }
-            }
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    print("완료")
-                case .failure(let error):
-                    print("에러 발생: \(error)")
+        Task{
+            do{
+                let uid = try await useCase.signInWithFirebase(model: model)
+                let isExist = try await useCase.checkIsExistedUser(uid: uid)
+                if !isExist{ try await useCase.createUser(uid: uid)}
+                await MainActor.run {
+                    self.isSuccessedFirebaseLogin = true
                 }
-            }, receiveValue: { isSuccess in
-                print("결과: \(isSuccess ? "성공" : "실패")")
-            })
-            .store(in: &cancellables)
+            }catch{
+                print(error.localizedDescription)
+            }
+        }
     }
 }

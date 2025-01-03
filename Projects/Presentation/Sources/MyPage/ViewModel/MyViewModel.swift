@@ -10,43 +10,38 @@ import Combine
 import Domain
 
 public class MyViewModel: ObservableObject{
-    private var cancellables = Set<AnyCancellable>()
     let useCase: MyUseCaseProtocol
     
     public init(useCase: MyUseCaseProtocol) {
         self.useCase = useCase
     }
     
+    @Published var isExited: Bool = false
+    
     func logout(){
-        useCase.logout()
-            .sink { completion in
-                switch completion{
-                case .finished:
-                    print("logout")
-                case .failure(let error):
-                    print("failed : \(error)")
+        Task{
+            do{
+                try await useCase.logout()
+                await MainActor.run {
+                    self.isExited = true
                 }
-            } receiveValue: { _ in
-                
+            }catch{
+                print(error.localizedDescription)
             }
-            .store(in: &cancellables)
+        }
     }
     
     func signout(){
-        useCase.signout()
-            .tryMap{ [weak self] in
-                return self?.useCase.logout()
-            }
-            .sink { completion in
-                switch completion{
-                case .finished:
-                    print("signout & logout")
-                case .failure(let error):
-                    print("failed : \(error)")
+        Task{
+            do{
+                try await useCase.signout()
+                try await useCase.logout()
+                await MainActor.run {
+                    self.isExited = true
                 }
-            } receiveValue: { _ in
-                
+            }catch{
+                print(error.localizedDescription)
             }
-            .store(in: &cancellables)
+        }
     }
 }

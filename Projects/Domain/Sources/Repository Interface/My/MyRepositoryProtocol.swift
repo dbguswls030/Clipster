@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import Combine
 
 public protocol MyRepositoryProtocol{
-    func logout() -> AnyPublisher<Void, Error>
-    func signout() -> AnyPublisher<Void, Error>
+    func logout() async throws
+    func signout() async throws
 }

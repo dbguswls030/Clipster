@@ -9,40 +9,36 @@ import Foundation
 import Domain
 
 struct FolderModelDTO: Codable{
-    let id: StringValue
-    let title: StringValue
-    let subfolders: ArrayValue<StringValue>
-    let URLs: ArrayValue<StringValue>
+    let id: String
+    let title: String
+    let subfolders: [String]
+    let URLs: [String]
+    let uid: String
     
-    enum RootKey: String, CodingKey {
-        case fields
+    enum CodingKeys: String, CodingKey{
+        case id, title, subfolders, URLs, uid
     }
     
-    enum FieldKeys: String, CodingKey {
-        case id
-        case title
-        case subfolders
-        case URLs
-    }
-    
-    init(id: String = UUID().uuidString, title: String, subfolders: [String], URLs: [String]) {
-        self.id = StringValue(value: id)
-        self.title = StringValue(value: title)
-        self.subfolders = ArrayValue(values: subfolders.map { StringValue(value: $0) })
-        self.URLs = ArrayValue(values: URLs.map { StringValue(value: $0) })
+    init(id: String = UUID().uuidString, title: String, subfolders: [String], URLs: [String], uid: String) {
+        self.id = id
+        self.title = title
+        self.subfolders = subfolders
+        self.URLs = URLs
+        self.uid = uid
     }
     
     init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: RootKey.self)
-        let fieldContainer = try container.nestedContainer(keyedBy: FieldKeys.self, forKey: .fields)
-        self.id = try fieldContainer.decode(StringValue.self, forKey: .id)
-        self.title = try fieldContainer.decode(StringValue.self, forKey: .title)
-        self.subfolders = try fieldContainer.decode(ArrayValue<StringValue>.self, forKey: .subfolders)
-        self.URLs = try fieldContainer.decode(ArrayValue<StringValue>.self, forKey: .URLs)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.subfolders = try container.decode([String].self, forKey: .subfolders)
+        self.URLs = try container.decode([String].self, forKey: .URLs)
+        self.uid = try container.decode(String.self, forKey: .uid)
     }
     
     func toEntity() -> FolderModel{
-        return FolderModel(id: id.value,
-                           title: title.value)
+        return FolderModel(id: id,
+                           title: title,
+                           uid: uid)
     }
 }

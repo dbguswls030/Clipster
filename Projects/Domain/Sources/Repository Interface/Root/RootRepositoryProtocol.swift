@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Combine
+
 public protocol RootRepositoryProtocol {
-    func fetchCurrentUser() -> AnyPublisher<Bool, Never>
+    func fetchCurrentUser() async -> Bool
 }

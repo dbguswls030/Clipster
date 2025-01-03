@@ -10,7 +10,6 @@ import Combine
 import Domain
 
 public class RootViewModel: ObservableObject{
-    private var cancellables = Set<AnyCancellable>()
     let useCase: RootUseCaseProtocol
     
     public init(useCase: RootUseCaseProtocol) {
@@ -21,9 +20,15 @@ public class RootViewModel: ObservableObject{
     @Published var isLoggedIn: Bool = false
     
     private func bind(){
-        useCase.fetchCurrentUser()
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.isLoggedIn, on: self)
-            .store(in: &cancellables)
+        fetchCurrentUser()
+    }
+    
+    private func fetchCurrentUser(){
+        Task{
+            let isLoggedIn = await useCase.fetchCurrentUser()
+            await MainActor.run {
+                self.isLoggedIn = isLoggedIn
+            }
+        }
     }
 }

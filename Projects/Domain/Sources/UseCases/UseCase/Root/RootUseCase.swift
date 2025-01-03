@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 
 final public class RootUseCase: RootUseCaseProtocol{
     let repository: RootRepositoryProtocol
@@ -14,8 +13,8 @@ final public class RootUseCase: RootUseCaseProtocol{
     public init(repository: RootRepositoryProtocol) {
         self.repository = repository
     }
-
-    public func fetchCurrentUser() -> AnyPublisher<Bool, Never> {
-        repository.fetchCurrentUser()
+    
+    public func fetchCurrentUser() async -> Bool {
+        await repository.fetchCurrentUser()
     }
 }

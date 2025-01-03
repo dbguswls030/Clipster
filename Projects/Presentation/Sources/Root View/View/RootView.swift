@@ -25,6 +25,8 @@ public struct RootView: View {
                 LoginView(viewModel: DIContainer.makeAuthDIContainer().makeAuthViewModel(), router: rootRouter)
             case .mainTab:
                 MainTabView(DIContainer: DIContainer, router: rootRouter)
+            case .empty:
+                EmptyView()
             }
         }
         .animation(.easeInOut, value: rootRouter.currentRoute)

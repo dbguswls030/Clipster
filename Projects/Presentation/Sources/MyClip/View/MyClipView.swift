@@ -10,7 +10,9 @@ import SwiftUI
 struct MyClipView: View {
     
     var body: some View {
-        Text("My Clips")
+        ScrollView{
+            Text("My Clips")
+        }
     }
 }
 

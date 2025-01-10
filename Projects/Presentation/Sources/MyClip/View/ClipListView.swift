@@ -20,10 +20,22 @@ struct ClipListView: View {
     var body: some View {
         List{
             ForEach(viewModel.urlClips){ item in
-                ClipRow(metaData: .constant( item.metaData))
+                Button(action: {
+                    openURL(item.URL)
+                }) {
+                    ClipRow(metaData: .constant(item.metaData))
+                }
             }
         }
         .navigationTitle(viewModel.folderModel.title)
-        
+    }
+}
+extension ClipListView{
+    private func openURL(_ url: URL) {
+        guard UIApplication.shared.canOpenURL(url) else {
+            print("Invalid URL")
+            return
+        }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }

@@ -22,7 +22,6 @@ final public class ClipListViewModel: ObservableObject{
     
     @Published var urlClips: [URLClipModel] = []
     
-    
     private func bind(){
         fetchURLs()
     }

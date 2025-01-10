@@ -21,4 +21,14 @@ public class SaveDIContainer: SaveDIContainerProtocol{
         let useCase = SaveUseCase(repository: repository)
         return SaveURLViewModel(useCase: useCase, clipBoradURL: clipBoardURL)
     }
+    public func makeClipViewModel() -> MyClipViewModel {
+        let repository = SaveRepository()
+        let useCase = SaveUseCase(repository: repository)
+        return MyClipViewModel(useCase: useCase)
+    }
+    public func makeClipListViewModel(folderModel: FolderModel) -> ClipListViewModel {
+        let repository = SaveRepository()
+        let useCase = SaveUseCase(repository: repository)
+        return ClipListViewModel(useCase: useCase, folderModel: folderModel)
+    }
 }

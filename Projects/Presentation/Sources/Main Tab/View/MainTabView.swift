@@ -19,13 +19,14 @@ public struct MainTabView: View {
     }
     
     public var body: some View {
-        NavigationStack {
+//        NavigationStack {
             TabView(selection: $viewModel.selection){
-                MyClipView()
+                MyClipView(saveDIContainer: DIContainer.makeSaveDIContainer())
                     .tabItem {
                         Label("clips", systemImage: "star")
                     }
                     .tag(TabCase.clips)
+                    
                 MyPageView(viewModel: DIContainer.makeMyDIContainer().makeMyViewModel(), router: rootRouter)
                     .tabItem{
                         Label("My", systemImage: "star.fill")
@@ -36,16 +37,16 @@ public struct MainTabView: View {
                 viewModel.handleScenePhaseChange(phase)
             }
             .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
-            .navigationDestination(isPresented: $viewModel.isPresentSaveURL) {
-                SaveURLView(viewModel: DIContainer.makeSaveDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
-                    .onAppear{
-                        viewModel.isShowingSaveURLView = true
-                    }
-                    .onDisappear{
-                        viewModel.isShowingSaveURLView = false
-                    }
-            }
-        }
+//            .navigationDestination(isPresented: $viewModel.isPresentSaveURL) {
+//                SaveURLView(viewModel: DIContainer.makeSaveDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+//                    .onAppear{
+//                        viewModel.isShowingSaveURLView = true
+//                    }
+//                    .onDisappear{
+//                        viewModel.isShowingSaveURLView = false
+//                    }
+//            }
+//        }
     }
 }
 

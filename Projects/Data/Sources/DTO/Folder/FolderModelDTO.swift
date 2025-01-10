@@ -36,6 +36,7 @@ struct FolderModelDTO: Codable{
     func toEntity() -> FolderModel{
         return FolderModel(id: id,
                            title: title,
-                           uid: uid)
+                           uid: uid,
+                           URLs: URLs.compactMap({URL(string: $0)}))
     }
 }

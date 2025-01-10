@@ -8,14 +8,23 @@
 import SwiftUI
 
 struct MyClipView: View {
+    @StateObject var viewModel: MyClipViewModel
+    let saveDIContainer: SaveDIContainerProtocol
     
+    init(saveDIContainer: SaveDIContainerProtocol) {
+        self.saveDIContainer = saveDIContainer
+        self._viewModel = .init(wrappedValue: saveDIContainer.makeClipViewModel())
+    }
     var body: some View {
-        ScrollView{
-            Text("My Clips")
+        NavigationStack{
+            List{
+                ForEach(viewModel.folders) { item in
+                    NavigationLink(destination: ClipListView(saveDIContainer: saveDIContainer, folderModel: item)) {
+                        MyFolderRow(folder: item)
+                    }
+                }
+            }
+            .navigationTitle("나의 폴더")
         }
     }
-}
-
-#Preview {
-    MyClipView()
 }

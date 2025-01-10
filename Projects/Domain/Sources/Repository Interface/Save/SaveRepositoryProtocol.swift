@@ -11,6 +11,7 @@ public protocol SaveRepositoryProtocol{
     // MARK: URL
     func fetchMetaData(url: URL) async throws -> URLMetaData?
     func makeURLClip(model: URLClipModel) async throws -> String
+    func fetchURLs(urls: [URL]) async throws -> [URLClipModel]
     
     // MARK: Folder
     func makeFolder() async throws

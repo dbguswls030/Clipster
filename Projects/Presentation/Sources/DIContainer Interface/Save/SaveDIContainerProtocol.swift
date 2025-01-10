@@ -6,8 +6,11 @@
 //
 
 import Foundation
+import Domain
 
 public protocol SaveDIContainerProtocol{
     func makeSaveViewModel(clipBoardURL: String) -> SaveURLViewModel
     func makeSaveViewModel() -> SaveURLViewModel
+    func makeClipViewModel() -> MyClipViewModel
+    func makeClipListViewModel(folderModel: FolderModel) -> ClipListViewModel
 }

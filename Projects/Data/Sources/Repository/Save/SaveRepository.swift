@@ -46,6 +46,21 @@ extension SaveRepository{
             throw error
         }
     }
+    
+    public func fetchURLs(urls: [URL]) async throws -> [URLClipModel] {
+        var models = [URLClipModel]()
+        do{
+            let docRef = db.collection("URLs")
+            for url in urls {
+                let model = try await docRef.document(url.absoluteString).getDocument(as: URLClipModelDTO.self).toEntity()
+                models.append(model)
+            }
+            return models
+        }catch{
+            throw error
+        }
+    }
+    
 }
 extension SaveRepository{
     // MARK: Folder

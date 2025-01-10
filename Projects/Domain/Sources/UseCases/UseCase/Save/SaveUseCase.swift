@@ -23,6 +23,10 @@ extension SaveUseCase{
     public func makeURLClip(model: URLClipModel) async throws -> String{
         try await repository.makeURLClip(model: model)
     }
+    
+    public func fetchURLs(urls: [URL]) async throws -> [URLClipModel] {
+        try await repository.fetchURLs(urls: urls)
+    }
 }
 extension SaveUseCase{
     // MARK: Folder

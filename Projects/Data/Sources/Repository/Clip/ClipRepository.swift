@@ -1,5 +1,5 @@
 //
-//  SaveRepository.swift
+//  ClipRepository.swift
 //  Data
 //
 //  Created by 유현진 on 12/3/24.
@@ -10,21 +10,14 @@ import Domain
 import FirebaseAuth
 import FirebaseFirestore
 
-enum SaveError: Error{
-    case noUID
-    case failedMakeFolder
-    case notMoyaErrorType
-    case failedFetchFolder
-}
-
-final public class SaveRepository: SaveRepositoryProtocol{
+final public class ClipRepository: ClipRepositoryProtocol{
     private let db: Firestore
 
     public init(db: Firestore = FirestoreManager.shared.db) {
         self.db = db
     }
 }
-extension SaveRepository{
+extension ClipRepository{
     // MARK: URL
     public func fetchMetaData(url: URL) async throws -> URLMetaData?{
         do{
@@ -62,7 +55,7 @@ extension SaveRepository{
     }
     
 }
-extension SaveRepository{
+extension ClipRepository{
     // MARK: Folder
     public func makeFolder() async throws{
         do{

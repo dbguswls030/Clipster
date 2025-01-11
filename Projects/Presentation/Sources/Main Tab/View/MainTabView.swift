@@ -20,7 +20,7 @@ public struct MainTabView: View {
     
     public var body: some View {
         TabView(selection: $viewModel.selection){
-            MyClipView(saveDIContainer: DIContainer.makeSaveDIContainer())
+            MyClipView(clipDIContainer: DIContainer.makeClipDIContainer())
                 .tabItem {
                     Label("clips", systemImage: "star")
                 }
@@ -37,7 +37,7 @@ public struct MainTabView: View {
         }
         .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
         .sheet(isPresented: $viewModel.isPresentSaveURL) {
-            SaveURLView(viewModel: DIContainer.makeSaveDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+            SaveURLView(viewModel: DIContainer.makeClipDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
                 .onAppear{
                     viewModel.isShowingSaveURLView = true
                 }

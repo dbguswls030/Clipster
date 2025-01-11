@@ -9,17 +9,17 @@ import SwiftUI
 
 struct MyClipView: View {
     @StateObject var viewModel: MyClipViewModel
-    let saveDIContainer: SaveDIContainerProtocol
+    let clipDIContainer: ClipDIContainerProtocol
     
-    init(saveDIContainer: SaveDIContainerProtocol) {
-        self.saveDIContainer = saveDIContainer
-        self._viewModel = .init(wrappedValue: saveDIContainer.makeClipViewModel())
+    init(clipDIContainer: ClipDIContainerProtocol) {
+        self.clipDIContainer = clipDIContainer
+        self._viewModel = .init(wrappedValue: clipDIContainer.makeClipViewModel())
     }
     var body: some View {
         NavigationStack{
             List{
                 ForEach(viewModel.folders) { item in
-                    NavigationLink(destination: ClipListView(saveDIContainer: saveDIContainer, folderModel: item)) {
+                    NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderModel: item)) {
                         MyFolderRow(folder: item)
                     }
                 }

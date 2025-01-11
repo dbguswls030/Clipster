@@ -11,10 +11,10 @@ import Combine
 
 final public class ClipListViewModel: ObservableObject{
     
-    let useCase: SaveUseCaseProtocol
+    let useCase: ClipUseCaseProtocol
     let folderModel: FolderModel
     
-    public init(useCase: SaveUseCaseProtocol, folderModel: FolderModel) {
+    public init(useCase: ClipUseCaseProtocol, folderModel: FolderModel) {
         self.useCase = useCase
         self.folderModel = folderModel
         bind()

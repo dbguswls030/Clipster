@@ -9,9 +9,9 @@ import Foundation
 import Domain
 
 final public class MyClipViewModel: ObservableObject{
-    let useCase: SaveUseCaseProtocol
+    let useCase: ClipUseCaseProtocol
     
-    public init(useCase: SaveUseCaseProtocol) {
+    public init(useCase: ClipUseCaseProtocol) {
         self.useCase = useCase
         bind()
     }

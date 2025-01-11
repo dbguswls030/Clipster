@@ -1,5 +1,5 @@
 //
-//  SaveUseCase.swift
+//  ClipUseCase.swift
 //  Domain
 //
 //  Created by 유현진 on 12/2/24.
@@ -7,14 +7,14 @@
 
 import Foundation
 
-final public class SaveUseCase: SaveUseCaseProtocol{
-    private let repository:  SaveRepositoryProtocol
+final public class ClipUseCase: ClipUseCaseProtocol{
+    private let repository:  ClipRepositoryProtocol
     
-    public init(repository: SaveRepositoryProtocol) {
+    public init(repository: ClipRepositoryProtocol) {
         self.repository = repository
     }
 }
-extension SaveUseCase{
+extension ClipUseCase{
     // MARK: URL
     public func fetchMetaData(url: URL) async throws -> URLMetaData?{
         try await repository.fetchMetaData(url: url)
@@ -28,7 +28,7 @@ extension SaveUseCase{
         try await repository.fetchURLs(urls: urls)
     }
 }
-extension SaveUseCase{
+extension ClipUseCase{
     // MARK: Folder
     public func makeFolder() async throws{
         try await repository.makeFolder()

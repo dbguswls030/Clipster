@@ -10,11 +10,11 @@ import Domain
 
 struct ClipListView: View {
     @StateObject var viewModel: ClipListViewModel
-    let saveDIContainer: SaveDIContainerProtocol
+    let clipDIContainer: ClipDIContainerProtocol
     
-    init(saveDIContainer: SaveDIContainerProtocol, folderModel: FolderModel) {
-        self.saveDIContainer = saveDIContainer
-        self._viewModel = .init(wrappedValue: saveDIContainer.makeClipListViewModel(folderModel: folderModel))
+    init(clipDIContainer: ClipDIContainerProtocol, folderModel: FolderModel) {
+        self.clipDIContainer = clipDIContainer
+        self._viewModel = .init(wrappedValue: clipDIContainer.makeClipListViewModel(folderModel: folderModel))
     }
     
     var body: some View {

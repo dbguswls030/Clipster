@@ -1,5 +1,5 @@
 //
-//  SaveRepositoryProtocol.swift
+//  ClipRepositoryProtocol.swift
 //  Domain
 //
 //  Created by 유현진 on 12/3/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol SaveRepositoryProtocol{
+public protocol ClipRepositoryProtocol{
     // MARK: URL
     func fetchMetaData(url: URL) async throws -> URLMetaData?
     func makeURLClip(model: URLClipModel) async throws -> String

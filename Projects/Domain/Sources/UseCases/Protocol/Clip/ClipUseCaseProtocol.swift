@@ -1,5 +1,5 @@
 //
-//  SaveUseCaseProtocol.swift
+//  ClipUseCaseProtocol.swift
 //  Domain
 //
 //  Created by 유현진 on 12/2/24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol SaveUseCaseProtocol{
+public protocol ClipUseCaseProtocol{
     // MARK: URL
     func fetchMetaData(url: URL) async throws -> URLMetaData?
     func makeURLClip(model: URLClipModel) async throws -> String

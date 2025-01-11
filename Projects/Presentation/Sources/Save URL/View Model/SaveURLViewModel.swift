@@ -14,15 +14,15 @@ import Domain
 final public class SaveURLViewModel: ObservableObject{
     
     private var cancellables = Set<AnyCancellable>()
-    private let useCase: SaveUseCaseProtocol
+    private let useCase: ClipUseCaseProtocol
     
-    public init(useCase: SaveUseCaseProtocol, clipBoradURL: String? = ""){
+    public init(useCase: ClipUseCaseProtocol, clipBoradURL: String? = ""){
         self.useCase = useCase
         if let url = clipBoradURL{ self.url = url }
         bind()
     }
     
-    public init(useCase: SaveUseCaseProtocol){
+    public init(useCase: ClipUseCaseProtocol){
         self.useCase = useCase
         bind()
     }

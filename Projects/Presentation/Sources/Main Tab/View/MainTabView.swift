@@ -19,34 +19,32 @@ public struct MainTabView: View {
     }
     
     public var body: some View {
-//        NavigationStack {
-            TabView(selection: $viewModel.selection){
-                MyClipView(saveDIContainer: DIContainer.makeSaveDIContainer())
-                    .tabItem {
-                        Label("clips", systemImage: "star")
-                    }
-                    .tag(TabCase.clips)
-                    
-                MyPageView(viewModel: DIContainer.makeMyDIContainer().makeMyViewModel(), router: rootRouter)
-                    .tabItem{
-                        Label("My", systemImage: "star.fill")
-                    }
-                    .tag(TabCase.myPage)
-            }
-            .onChange(of: scenePhase) { phase in
-                viewModel.handleScenePhaseChange(phase)
-            }
-            .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
-//            .navigationDestination(isPresented: $viewModel.isPresentSaveURL) {
-//                SaveURLView(viewModel: DIContainer.makeSaveDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
-//                    .onAppear{
-//                        viewModel.isShowingSaveURLView = true
-//                    }
-//                    .onDisappear{
-//                        viewModel.isShowingSaveURLView = false
-//                    }
-//            }
-//        }
+        TabView(selection: $viewModel.selection){
+            MyClipView(saveDIContainer: DIContainer.makeSaveDIContainer())
+                .tabItem {
+                    Label("clips", systemImage: "star")
+                }
+                .tag(TabCase.clips)
+            
+            MyPageView(viewModel: DIContainer.makeMyDIContainer().makeMyViewModel(), router: rootRouter)
+                .tabItem{
+                    Label("My", systemImage: "star.fill")
+                }
+                .tag(TabCase.myPage)
+        }
+        .onChange(of: scenePhase) { phase in
+            viewModel.handleScenePhaseChange(phase)
+        }
+        .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
+        .sheet(isPresented: $viewModel.isPresentSaveURL) {
+            SaveURLView(viewModel: DIContainer.makeSaveDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+                .onAppear{
+                    viewModel.isShowingSaveURLView = true
+                }
+                .onDisappear{
+                    viewModel.isShowingSaveURLView = false
+                }
+        }
     }
 }
 

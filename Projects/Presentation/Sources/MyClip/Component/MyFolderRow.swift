@@ -13,9 +13,9 @@ struct MyFolderRow: View {
     
     var body: some View {
         HStack(alignment: .center){
-            Text("-")
-                .font(.headline)
-                .fontWeight(.semibold)
+            Image(systemName: "folder")
+                .frame(width: 35, height: 35)
+                .aspectRatio(contentMode: .fit)
             
             Text(folder.title)
                 .font(.headline)

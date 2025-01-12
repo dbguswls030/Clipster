@@ -25,7 +25,6 @@ struct ClipDetailView: View {
                 }) {
                     PreViewURLView(metaData: .constant(viewModel.URLClipModel.metaData))
                 }
-                
                 Text(viewModel.URLClipModel.description)
             }
         }

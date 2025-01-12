@@ -31,4 +31,9 @@ public class ClipDIContainer: ClipDIContainerProtocol{
         let useCase = ClipUseCase(repository: repository)
         return ClipListViewModel(useCase: useCase, folderModel: folderModel)
     }
+    public func makeClipDetailViewModel(URLClipModel: URLClipModel) -> ClipDetailViewModel{
+        let repository = ClipRepository()
+        let useCase = ClipUseCase(repository: repository)
+        return ClipDetailViewModel(useCase: useCase, URLClipModel: URLClipModel)
+    }
 }

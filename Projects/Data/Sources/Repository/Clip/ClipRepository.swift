@@ -68,6 +68,17 @@ extension ClipRepository{
         }
     }
     
+    public func makeFolder(newFolderName: String) async throws {
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            let newFolder = FolderModelDTO(title: newFolderName, URLs: [], uid: uid)
+            let docRef = db.collection("users").document(uid).collection("folders").document(newFolder.id)
+            try docRef.setData(from: newFolder)
+        }catch{
+            throw error
+        }
+    }
+    
     public func fetchFolder() async throws -> [FolderModel]{
         do{
             let uid = Auth.auth().currentUser!.uid

@@ -15,6 +15,7 @@ struct MyClipView: View {
         self.clipDIContainer = clipDIContainer
         self._viewModel = .init(wrappedValue: clipDIContainer.makeClipViewModel())
     }
+    
     var body: some View {
         List{
             ForEach(viewModel.folders) { item in
@@ -24,6 +25,12 @@ struct MyClipView: View {
             }
         }
         .toolbar {
+            NavigationLink {
+                MakeFolderView(clipDIContainer: clipDIContainer, isUpdateFolder: $viewModel.isUpdateFolders)
+            } label: {
+                Image(systemName: "folder.badge.plus")
+                    .foregroundStyle(.black)
+            }
         }
     }
 }

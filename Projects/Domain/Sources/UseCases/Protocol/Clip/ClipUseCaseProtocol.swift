@@ -15,6 +15,7 @@ public protocol ClipUseCaseProtocol{
     
     // MARK: Folder
     func makeFolder() async throws
+    func makeFolder(newFolderName: String) async throws
     func fetchFolder() async throws -> [FolderModel]
     func saveURLClip(folderId: String, URLClipId: String) async throws
 }

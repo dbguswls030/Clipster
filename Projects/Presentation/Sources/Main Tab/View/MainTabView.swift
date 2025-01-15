@@ -19,18 +19,21 @@ public struct MainTabView: View {
     }
     
     public var body: some View {
-        TabView(selection: $viewModel.selection){
-            MyClipView(clipDIContainer: DIContainer.makeClipDIContainer())
-                .tabItem {
-                    Label("clips", systemImage: "star")
-                }
-                .tag(TabCase.clips)
-            
-            MyPageView(viewModel: DIContainer.makeMyDIContainer().makeMyViewModel(), router: rootRouter)
-                .tabItem{
-                    Label("My", systemImage: "star.fill")
-                }
-                .tag(TabCase.myPage)
+        NavigationStack{
+            TabView(selection: $viewModel.selection){
+                MyClipView(clipDIContainer: DIContainer.makeClipDIContainer())
+                    .tabItem {
+                        Label("clips", systemImage: "star")
+                    }
+                    .tag(TabCase.clips)
+                
+                MyPageView(viewModel: DIContainer.makeMyDIContainer().makeMyViewModel(), router: rootRouter)
+                    .tabItem{
+                        Label("My", systemImage: "star.fill")
+                    }
+                    .tag(TabCase.myPage)
+            }
+            .navigationTitle(viewModel.selection == .clips ? "나의 폴더" : "마이페이지")
         }
         .onChange(of: scenePhase) { phase in
             viewModel.handleScenePhaseChange(phase)

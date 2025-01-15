@@ -16,15 +16,14 @@ struct MyClipView: View {
         self._viewModel = .init(wrappedValue: clipDIContainer.makeClipViewModel())
     }
     var body: some View {
-        NavigationStack{
-            List{
-                ForEach(viewModel.folders) { item in
-                    NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderModel: item)) {
-                        MyFolderRow(folder: item)
-                    }
+        List{
+            ForEach(viewModel.folders) { item in
+                NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderModel: item)) {
+                    MyFolderRow(folder: item)
                 }
             }
-            .navigationTitle("나의 폴더")
+        }
+        .toolbar {
         }
     }
 }

@@ -11,7 +11,7 @@ import Domain
 public protocol ClipDIContainerProtocol{
     func makeSaveViewModel(clipBoardURL: String) -> SaveURLViewModel
     func makeSaveViewModel() -> SaveURLViewModel
-    func makeClipViewModel() -> MyClipViewModel
+    func makeClipViewModel() -> MyFolderViewModel
     func makeClipListViewModel(folderModel: FolderModel) -> ClipListViewModel
     func makeClipDetailViewModel(URLClipModel: URLClipModel) -> ClipDetailViewModel
     func makeMakeFolderViewModel() -> MakeFolderViewModel

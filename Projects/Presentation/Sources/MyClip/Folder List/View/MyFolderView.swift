@@ -1,5 +1,5 @@
 //
-//  MyClipView.swift
+//  MyFolderView.swift
 //  Presentation
 //
 //  Created by 유현진 on 11/16/24.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct MyClipView: View {
-    @StateObject var viewModel: MyClipViewModel
+struct MyFolderView: View {
+    @StateObject var viewModel: MyFolderViewModel
     let clipDIContainer: ClipDIContainerProtocol
     
     init(clipDIContainer: ClipDIContainerProtocol) {

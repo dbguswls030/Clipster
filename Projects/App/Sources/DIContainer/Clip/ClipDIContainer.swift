@@ -21,10 +21,10 @@ public class ClipDIContainer: ClipDIContainerProtocol{
         let useCase = ClipUseCase(repository: repository)
         return SaveURLViewModel(useCase: useCase, clipBoradURL: clipBoardURL)
     }
-    public func makeClipViewModel() -> MyClipViewModel {
+    public func makeClipViewModel() -> MyFolderViewModel {
         let repository = ClipRepository()
         let useCase = ClipUseCase(repository: repository)
-        return MyClipViewModel(useCase: useCase)
+        return MyFolderViewModel(useCase: useCase)
     }
     public func makeClipListViewModel(folderModel: FolderModel) -> ClipListViewModel {
         let repository = ClipRepository()

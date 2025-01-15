@@ -1,5 +1,5 @@
 //
-//  MyClipViewModel.swift
+//  MyFolderViewModel.swift
 //  Presentation
 //
 //  Created by 유현진 on 1/5/25.
@@ -9,7 +9,7 @@ import Foundation
 import Domain
 import Combine
 
-final public class MyClipViewModel: ObservableObject{
+final public class MyFolderViewModel: ObservableObject{
     private var cancellables = Set<AnyCancellable>()
     
     let useCase: ClipUseCaseProtocol

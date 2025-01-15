@@ -21,7 +21,7 @@ public struct MainTabView: View {
     public var body: some View {
         NavigationStack{
             TabView(selection: $viewModel.selection){
-                MyClipView(clipDIContainer: DIContainer.makeClipDIContainer())
+                MyFolderView(clipDIContainer: DIContainer.makeClipDIContainer())
                     .tabItem {
                         Label("clips", systemImage: "star")
                     }

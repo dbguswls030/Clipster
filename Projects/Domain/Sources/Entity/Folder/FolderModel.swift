@@ -12,9 +12,9 @@ public struct FolderModel: Identifiable{
     public var id: String
     public var title: String
     public var subfolders: [FolderModel]
-    public var URLs: [URL] = []
+    public var URLs: [String] = []
     
-    public init(id: String = UUID().uuidString, title: String, subfolders: [FolderModel] = [], uid: String, URLs: [URL]) {
+    public init(id: String = UUID().uuidString, title: String, subfolders: [FolderModel] = [], uid: String, URLs: [String]) {
         self.id = id
         self.title = title
         self.subfolders = subfolders

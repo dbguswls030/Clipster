@@ -50,4 +50,20 @@ final public class MyFolderViewModel: ObservableObject{
             }
             .store(in: &cancellables)
     }
+    
+    func removeFolder(at offsets: IndexSet){
+        Task{
+            do{
+                await MainActor.run {
+                    folders.remove(atOffsets: offsets)
+                }
+                try await useCase.removeFolder(folder: folders[offsets.first!])
+                await MainActor.run {
+                    isUpdateFolders = true
+                }
+            }catch{
+                print(error.localizedDescription)
+            }
+        }
+    }
 }

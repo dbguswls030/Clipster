@@ -11,11 +11,12 @@ public protocol ClipRepositoryProtocol{
     // MARK: URL
     func fetchMetaData(url: URL) async throws -> URLMetaData?
     func makeURLClip(model: URLClipModel) async throws -> String
-    func fetchURLs(urls: [URL]) async throws -> [URLClipModel]
+    func fetchURLs(urls: [String]) async throws -> [URLClipModel]
     
     // MARK: Folder
     func makeFolder() async throws
     func makeFolder(newFolderName: String) async throws
     func fetchFolder() async throws -> [FolderModel]
     func saveURLClip(folderId: String, URLClipId: String) async throws
+    func removeFolder(folder: FolderModel) async throws
 }

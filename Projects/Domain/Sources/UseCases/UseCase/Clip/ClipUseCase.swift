@@ -24,7 +24,7 @@ extension ClipUseCase{
         try await repository.makeURLClip(model: model)
     }
     
-    public func fetchURLs(urls: [URL]) async throws -> [URLClipModel] {
+    public func fetchURLs(urls: [String]) async throws -> [URLClipModel] {
         try await repository.fetchURLs(urls: urls)
     }
 }
@@ -44,5 +44,9 @@ extension ClipUseCase{
     
     public func saveURLClip(folderId: String, URLClipId: String) async throws{
         try await repository.saveURLClip(folderId: folderId, URLClipId: URLClipId)
+    }
+    
+    public func removeFolder(folder: FolderModel) async throws{
+        try await repository.removeFolder(folder: folder)
     }
 }

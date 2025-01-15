@@ -40,12 +40,12 @@ extension ClipRepository{
         }
     }
     
-    public func fetchURLs(urls: [URL]) async throws -> [URLClipModel] {
+    public func fetchURLs(urls: [String]) async throws -> [URLClipModel] {
         var models = [URLClipModel]()
         do{
             let docRef = db.collection("URLs")
             for url in urls {
-                let model = try await docRef.document(url.absoluteString).getDocument(as: URLClipModelDTO.self).toEntity()
+                let model = try await docRef.document(url).getDocument(as: URLClipModelDTO.self).toEntity()
                 models.append(model)
             }
             return models
@@ -103,6 +103,22 @@ extension ClipRepository{
             try await docRef.updateData([
                 "URLs" : FirebaseFirestore.FieldValue.arrayUnion([URLClipId])
             ])
+        }catch{
+            throw error
+        }
+    }
+    
+    public func removeFolder(folder: FolderModel) async throws{
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            // 폴더 안에 있는 URL 삭제
+            let urlDocRef = db.collection("URLs")
+            for urlId in folder.URLs{
+                try await urlDocRef.document(urlId).delete()
+            }
+            // 폴더 삭제
+            let folderDocRef = db.collection("users").document(uid).collection("folders").document(folder.id)
+            try await folderDocRef.delete()
         }catch{
             throw error
         }

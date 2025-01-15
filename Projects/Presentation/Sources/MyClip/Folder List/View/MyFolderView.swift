@@ -23,6 +23,7 @@ struct MyFolderView: View {
                     MyFolderRow(folder: item)
                 }
             }
+//            .onDelete(perform: viewModel.removeFolder)
         }
         .toolbar {
             NavigationLink {

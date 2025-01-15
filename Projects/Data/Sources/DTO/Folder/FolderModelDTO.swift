@@ -37,6 +37,6 @@ struct FolderModelDTO: Codable{
         return FolderModel(id: id,
                            title: title,
                            uid: uid,
-                           URLs: URLs.compactMap({URL(string: $0)}))
+                           URLs: URLs)
     }
 }

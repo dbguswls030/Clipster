@@ -22,6 +22,8 @@ final public class MyFolderViewModel: ObservableObject{
     @Published var folders: [FolderModel] = []
     
     @Published var isUpdateFolders: Bool = false
+    @Published var isShowingAlert: Bool = false
+    @Published var deleteFolderIndex: IndexSet?
     
     private func bind(){
         fetchFolders()
@@ -54,9 +56,6 @@ final public class MyFolderViewModel: ObservableObject{
     func removeFolder(at offsets: IndexSet){
         Task{
             do{
-                await MainActor.run {
-                    folders.remove(atOffsets: offsets)
-                }
                 try await useCase.removeFolder(folder: folders[offsets.first!])
                 await MainActor.run {
                     isUpdateFolders = true
@@ -65,5 +64,10 @@ final public class MyFolderViewModel: ObservableObject{
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    func clearDeleteProperty(){
+        isShowingAlert = false
+        deleteFolderIndex = nil
     }
 }

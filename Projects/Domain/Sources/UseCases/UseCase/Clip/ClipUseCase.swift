@@ -30,10 +30,6 @@ extension ClipUseCase{
 }
 extension ClipUseCase{
     // MARK: Folder
-    public func makeFolder() async throws{
-        try await repository.makeFolder()
-    }
-    
     public func makeFolder(newFolderName: String) async throws{
         try await repository.makeFolder(newFolderName: newFolderName)
     }

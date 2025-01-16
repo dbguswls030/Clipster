@@ -44,7 +44,8 @@ final public class SaveURLViewModel: ObservableObject{
     
     @Published var isSaved: Bool = false
     @Published var isLoadingDuringSave: Bool = false
-    @Published var isLoadingDuringMakeFolder: Bool = false
+    
+    @Published var isUpdateFolders: Bool = false
     
     private func bind(){
         $url
@@ -69,6 +70,13 @@ final public class SaveURLViewModel: ObservableObject{
             }.store(in: &cancellables)
         
         fetchFolders()
+        
+        $isUpdateFolders
+            .filter{$0}
+            .sink { [weak self] _ in
+                self?.fetchFolders()
+            }
+            .store(in: &cancellables)
     }
     
     private func fetchURLMetaData(url: URL){
@@ -116,27 +124,10 @@ final public class SaveURLViewModel: ObservableObject{
                 let folders = try await useCase.fetchFolder()
                 await MainActor.run {
                     self.folderHierachy = folders
+                    isUpdateFolders = false
                 }
             }catch{
                 print(error.localizedDescription)
-            }
-        }
-    }
-    
-    func makeFolder(){
-        self.isLoadingDuringMakeFolder = true
-        Task{
-            do{
-                try await useCase.makeFolder()
-                let folders = try await useCase.fetchFolder()
-                await MainActor.run {
-                    self.isLoadingDuringMakeFolder = false
-                    self.folderHierachy = folders
-                }
-            }catch{
-                await MainActor.run {
-                    self.isLoadingDuringMakeFolder = false
-                }
             }
         }
     }

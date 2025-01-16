@@ -34,20 +34,20 @@ public struct MainTabView: View {
                     .tag(TabCase.myPage)
             }
             .navigationTitle(viewModel.selection == .clips ? "나의 폴더" : "마이페이지")
+            .navigationDestination(isPresented: $viewModel.isPresentSaveURL, destination: {
+                SaveURLView(DIContainer: DIContainer.makeClipDIContainer(), pastedURL: viewModel.pastedURL?.absoluteString ?? "")
+                    .onAppear{
+                        viewModel.isShowingSaveURLView = true
+                    }
+                    .onDisappear{
+                        viewModel.isShowingSaveURLView = false
+                    }
+            })
         }
         .onChange(of: scenePhase) { phase in
             viewModel.handleScenePhaseChange(phase)
         }
         .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
-        .sheet(isPresented: $viewModel.isPresentSaveURL) {
-            SaveURLView(viewModel: DIContainer.makeClipDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
-                .onAppear{
-                    viewModel.isShowingSaveURLView = true
-                }
-                .onDisappear{
-                    viewModel.isShowingSaveURLView = false
-                }
-        }
     }
 }
 

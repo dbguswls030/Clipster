@@ -68,7 +68,7 @@ extension ClipRepository{
         }
     }
     
-    public func fetchFolder() async throws -> [FolderModel]{
+    public func fetchFolders() async throws -> [FolderModel]{
         do{
             let uid = Auth.auth().currentUser!.uid
             let docRef = db.collection("users").document(uid).collection("folders")
@@ -80,6 +80,18 @@ extension ClipRepository{
                 folders.append(model)
             }
             return folders
+        }catch{
+            throw error
+        }
+    }
+    
+    public func fetchFolder(folderId: String) async throws -> FolderModel{
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            let docRef = db.collection("users").document(uid).collection("folders").document(folderId)
+            let docuemnt = try await docRef.getDocument()
+            let folder = try docuemnt.data(as: FolderModelDTO.self).toEntity()
+            return folder
         }catch{
             throw error
         }

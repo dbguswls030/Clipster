@@ -34,8 +34,12 @@ extension ClipUseCase{
         try await repository.makeFolder(newFolderName: newFolderName)
     }
     
-    public func fetchFolder() async throws -> [FolderModel]{
-        try await repository.fetchFolder()
+    public func fetchFolders() async throws -> [FolderModel]{
+        try await repository.fetchFolders()
+    }
+    
+    public func fetchFolder(folderId: String) async throws -> FolderModel{
+        try await repository.fetchFolder(folderId: folderId)
     }
     
     public func saveURLClip(folderId: String, URLClipId: String) async throws{

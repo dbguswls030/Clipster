@@ -15,7 +15,8 @@ public protocol ClipRepositoryProtocol{
     
     // MARK: Folder
     func makeFolder(newFolderName: String) async throws
-    func fetchFolder() async throws -> [FolderModel]
+    func fetchFolders() async throws -> [FolderModel]
+    func fetchFolder(folderId: String) async throws -> FolderModel
     func saveURLClip(folderId: String, URLClipId: String) async throws
     func removeFolder(folder: FolderModel) async throws
 }

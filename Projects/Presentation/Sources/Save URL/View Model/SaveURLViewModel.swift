@@ -121,7 +121,7 @@ final public class SaveURLViewModel: ObservableObject{
     func fetchFolders(){
         Task{
             do{
-                let folders = try await useCase.fetchFolder()
+                let folders = try await useCase.fetchFolders()
                 await MainActor.run {
                     self.folderHierachy = folders
                     isUpdateFolders = false

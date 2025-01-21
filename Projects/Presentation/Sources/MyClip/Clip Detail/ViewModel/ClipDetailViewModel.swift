@@ -17,6 +17,4 @@ final public class ClipDetailViewModel: ObservableObject{
         self.useCase = useCase
         self.URLClipModel = URLClipModel
     }
-    
-    
 }

@@ -29,7 +29,9 @@ final public class ClipListViewModel: ObservableObject{
     func fetchURLs(){
         Task{
             do{
-                let newModels = try await useCase.fetchURLs(urls: folderModel.URLs)
+                // Folder id로 folder의 url 다시 긁어와야 함
+                let newFolder = try await useCase.fetchFolder(folderId: folderModel.id)
+                let newModels = try await useCase.fetchURLs(urls: newFolder.URLs)
                 await MainActor.run {
                     urlClips = newModels
                 }

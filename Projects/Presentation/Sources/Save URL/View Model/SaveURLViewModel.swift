@@ -28,9 +28,12 @@ final public class SaveURLViewModel: ObservableObject{
     }
     
     @Published var metaData: URLMetaData?
-    @Published var url: String = ""{
-        didSet{
-            isLoadingForTextField = true
+    @Published var url: String = ""
+    {
+        didSet(oldValue){
+            if url != oldValue{
+                isLoadingForTextField = true
+            }
         }
     }
     
@@ -52,9 +55,12 @@ final public class SaveURLViewModel: ObservableObject{
             .debounce(for: 1, scheduler: RunLoop.main)
             .map{URL(string: $0)}
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] url in
                 if let validURL = url {
                     self?.fetchURLMetaData(url: validURL)
+                }else{
+                    self?.isLoadingForTextField = false
                 }
             })
             .store(in: &cancellables)
@@ -89,6 +95,9 @@ final public class SaveURLViewModel: ObservableObject{
                 }
             }catch{
                 print(error.localizedDescription)
+                await MainActor.run {
+                    self.isLoadingForTextField = false
+                }
             }
         }
     }

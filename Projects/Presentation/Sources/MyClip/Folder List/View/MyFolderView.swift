@@ -46,11 +46,20 @@ struct MyFolderView: View {
             }
         }
         .toolbar {
-            NavigationLink {
-                MakeFolderView(clipDIContainer: clipDIContainer, isUpdateFolder: $viewModel.isUpdateFolders)
-            } label: {
-                Image(systemName: "folder.badge.plus")
-                    .foregroundStyle(.black)
+            HStack{
+                NavigationLink {
+                    MakeFolderView(clipDIContainer: clipDIContainer, isUpdateFolder: $viewModel.isUpdateFolders)
+                } label: {
+                    Image(systemName: "folder.badge.plus")
+                        .foregroundStyle(.black)
+                }
+                
+                NavigationLink {
+                    SaveURLView(clipDIContainer: clipDIContainer)
+                } label: {
+                    Image(systemName: "plus")
+                        .foregroundStyle(.black)
+                }
             }
         }
     }

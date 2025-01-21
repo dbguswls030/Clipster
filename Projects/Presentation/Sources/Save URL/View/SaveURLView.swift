@@ -12,11 +12,16 @@ struct SaveURLView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: SaveURLViewModel
     @FocusState var isFocused: Bool
-    let DIContainer: ClipDIContainerProtocol
+    let clipDIContainer: ClipDIContainerProtocol
     
-    init(DIContainer: ClipDIContainerProtocol, pastedURL: String) {
-        self.DIContainer = DIContainer
-        self._viewModel = .init(wrappedValue:  DIContainer.makeSaveViewModel(clipBoardURL: pastedURL))
+    init(clipDIContainer: ClipDIContainerProtocol, pastedURL: String) {
+        self.clipDIContainer = clipDIContainer
+        self._viewModel = .init(wrappedValue:  clipDIContainer.makeSaveViewModel(clipBoardURL: pastedURL))
+    }
+    
+    init(clipDIContainer: ClipDIContainerProtocol) {
+        self.clipDIContainer = clipDIContainer
+        self._viewModel = .init(wrappedValue:  clipDIContainer.makeSaveViewModel())
     }
     
     var body: some View {
@@ -24,7 +29,7 @@ struct SaveURLView: View {
             LazyVStack(alignment: .center, spacing: 30){
                 URLSectionView(viewModel: viewModel)
                 URLDescriptionView(description: $viewModel.description, focusTextEditor: $isFocused)
-                FolderSectionView(viewModel: viewModel, DIContainer: DIContainer)
+                FolderSectionView(viewModel: viewModel, DIContainer: clipDIContainer)
             }
         }
         .navigationTitle("업로드")

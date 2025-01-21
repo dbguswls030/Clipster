@@ -35,7 +35,7 @@ public struct MainTabView: View {
             }
             .navigationTitle(viewModel.selection == .clips ? "나의 폴더" : "마이페이지")
             .navigationDestination(isPresented: $viewModel.isPresentSaveURL, destination: {
-                SaveURLView(DIContainer: DIContainer.makeClipDIContainer(), pastedURL: viewModel.pastedURL?.absoluteString ?? "")
+                SaveURLView(clipDIContainer: DIContainer.makeClipDIContainer(), pastedURL: viewModel.pastedURL?.absoluteString ?? "")
                     .onAppear{
                         viewModel.isShowingSaveURLView = true
                     }

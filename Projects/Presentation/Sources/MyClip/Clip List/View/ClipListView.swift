@@ -9,6 +9,7 @@ import SwiftUI
 import Domain
 
 struct ClipListView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: ClipListViewModel
     let clipDIContainer: ClipDIContainerProtocol
     @Binding private var isUpdateFolder: Bool
@@ -39,7 +40,7 @@ struct ClipListView: View {
                     }
 
                     Button(role: .destructive) {
-                        
+                        viewModel.isShowingAlert = true
                     } label: {
                         HStack{
                             Text("폴더 삭제")
@@ -57,6 +58,28 @@ struct ClipListView: View {
             if newValue{
                 isUpdateFolder = true
             }
+        }
+        .onChange(of: viewModel.isRemoveFolder) { newValue in
+            if newValue{
+                isUpdateFolder = true
+                dismiss()
+            }
+        }
+        .alert(isPresented: $viewModel.isShowingAlert) {
+            Alert(title: Text("폴더 삭제"),
+                  message: Text("폴더와 폴더 안에 저장된 내용이 모두 삭제됩니다. 정말 삭제하시겠습니까?"),
+                  primaryButton: .destructive(
+                    Text("삭제"),
+                    action: {
+                        viewModel.removeFolder()
+                        viewModel.clearRemoveFolderProperty()
+                    }),
+                  secondaryButton: .cancel(
+                    Text("취소"),
+                    action: {
+                        viewModel.clearRemoveFolderProperty()
+                    })
+            )
         }
     }
 }

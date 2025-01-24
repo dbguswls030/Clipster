@@ -25,6 +25,8 @@ final public class ClipListViewModel: ObservableObject{
     @Published var urlClips: [URLClipModel] = []
     @Published var folderModel: FolderModel?
     @Published var isUpdatedFolder: Bool = false
+    @Published var isRemoveFolder: Bool = false
+    @Published var isShowingAlert: Bool = false
     
     private func bind(){
         fetchURLs()
@@ -63,5 +65,23 @@ final public class ClipListViewModel: ObservableObject{
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    func removeFolder(){
+        guard let folderModel = folderModel else { return }
+        Task{
+            do{
+                try await useCase.removeFolder(folder: folderModel)
+                await MainActor.run{
+                    isRemoveFolder = true
+                }
+            }catch{
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func clearRemoveFolderProperty(){
+        isShowingAlert = false
     }
 }

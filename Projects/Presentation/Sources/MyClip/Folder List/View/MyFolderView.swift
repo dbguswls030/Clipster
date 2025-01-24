@@ -19,7 +19,7 @@ struct MyFolderView: View {
     var body: some View {
         List{
             ForEach(viewModel.folders) { item in
-                NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderModel: item)) {
+                NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderId: item.id)) {
                     MyFolderRow(folder: item)
                 }
             }
@@ -45,6 +45,9 @@ struct MyFolderView: View {
                 )
             }
         }
+        .refreshable(action: {
+            viewModel.fetchFolders()
+        })
         .toolbar {
             HStack{
                 NavigationLink {

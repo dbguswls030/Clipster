@@ -30,7 +30,7 @@ final public class MyFolderViewModel: ObservableObject{
         observerIsUpdateFolders()
     }
     
-    private func fetchFolders(){
+    func fetchFolders(){
         Task{
             do{
                 let fetchFolder = try await useCase.fetchFolders()

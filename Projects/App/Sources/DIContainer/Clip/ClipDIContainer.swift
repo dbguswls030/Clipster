@@ -9,6 +9,7 @@ import Foundation
 import Domain
 import Data
 import Presentation
+import Combine
 
 public class ClipDIContainer: ClipDIContainerProtocol{
     public func makeSaveViewModel() -> SaveURLViewModel {
@@ -26,10 +27,10 @@ public class ClipDIContainer: ClipDIContainerProtocol{
         let useCase = ClipUseCase(repository: repository)
         return MyFolderViewModel(useCase: useCase)
     }
-    public func makeClipListViewModel(folderModel: FolderModel) -> ClipListViewModel {
+    public func makeClipListViewModel(folderId: String) -> ClipListViewModel {
         let repository = ClipRepository()
         let useCase = ClipUseCase(repository: repository)
-        return ClipListViewModel(useCase: useCase, folderModel: folderModel)
+        return ClipListViewModel(useCase: useCase, folderId: folderId)
     }
     public func makeClipDetailViewModel(URLClipModel: URLClipModel) -> ClipDetailViewModel{
         let repository = ClipRepository()
@@ -40,5 +41,10 @@ public class ClipDIContainer: ClipDIContainerProtocol{
         let repository = ClipRepository()
         let useCase = ClipUseCase(repository: repository)
         return MakeFolderViewModel(useCase: useCase)
+    }
+    public func makeEditFolderViewModel(folderModel: FolderModel) -> EditFolderViewModel {
+        let repository = ClipRepository()
+        let useCase = ClipUseCase(repository: repository)
+        return EditFolderViewModel(useCase: useCase, folderModel: folderModel)
     }
 }

@@ -7,12 +7,14 @@
 
 import Foundation
 import Domain
+import Combine
 
 public protocol ClipDIContainerProtocol{
     func makeSaveViewModel(clipBoardURL: String) -> SaveURLViewModel
     func makeSaveViewModel() -> SaveURLViewModel
     func makeClipViewModel() -> MyFolderViewModel
-    func makeClipListViewModel(folderModel: FolderModel) -> ClipListViewModel
+    func makeClipListViewModel(folderId: String) -> ClipListViewModel
     func makeClipDetailViewModel(URLClipModel: URLClipModel) -> ClipDetailViewModel
     func makeMakeFolderViewModel() -> MakeFolderViewModel
+    func makeEditFolderViewModel(folderModel: FolderModel) -> EditFolderViewModel
 }

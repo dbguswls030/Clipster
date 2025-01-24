@@ -42,11 +42,15 @@ extension ClipUseCase{
         try await repository.fetchFolder(folderId: folderId)
     }
     
-    public func saveURLClip(folderId: String, URLClipId: String) async throws{
-        try await repository.saveURLClip(folderId: folderId, URLClipId: URLClipId)
-    }
-    
     public func removeFolder(folder: FolderModel) async throws{
         try await repository.removeFolder(folder: folder)
+    }
+    
+    public func editFolderTitle(folderId: String, editedTitle: String) async throws {
+        try await repository.editFolderTitle(folderId: folderId, editedTitle: editedTitle)
+    }
+    
+    public func saveURLClip(folderId: String, URLClipId: String) async throws{
+        try await repository.saveURLClip(folderId: folderId, URLClipId: URLClipId)
     }
 }

@@ -97,18 +97,6 @@ extension ClipRepository{
         }
     }
     
-    public func saveURLClip(folderId: String, URLClipId: String) async throws{
-        do{
-            let uid = Auth.auth().currentUser!.uid
-            let docRef = db.collection("users").document(uid).collection("folders").document(folderId)
-            try await docRef.updateData([
-                "URLs" : FirebaseFirestore.FieldValue.arrayUnion([URLClipId])
-            ])
-        }catch{
-            throw error
-        }
-    }
-    
     public func removeFolder(folder: FolderModel) async throws{
         do{
             let uid = Auth.auth().currentUser!.uid
@@ -120,6 +108,28 @@ extension ClipRepository{
             // 폴더 삭제
             let folderDocRef = db.collection("users").document(uid).collection("folders").document(folder.id)
             try await folderDocRef.delete()
+        }catch{
+            throw error
+        }
+    }
+    
+    public func editFolderTitle(folderId: String, editedTitle: String) async throws {
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            let docRef = db.collection("users").document(uid).collection("folders").document(folderId)
+            try await docRef.updateData(["title" : editedTitle])
+        }catch{
+            throw error
+        }
+    }
+    
+    public func saveURLClip(folderId: String, URLClipId: String) async throws{
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            let docRef = db.collection("users").document(uid).collection("folders").document(folderId)
+            try await docRef.updateData([
+                "URLs" : FirebaseFirestore.FieldValue.arrayUnion([URLClipId])
+            ])
         }catch{
             throw error
         }

@@ -12,9 +12,9 @@ struct ClipListView: View {
     @StateObject var viewModel: ClipListViewModel
     let clipDIContainer: ClipDIContainerProtocol
     
-    init(clipDIContainer: ClipDIContainerProtocol, folderModel: FolderModel) {
+    init(clipDIContainer: ClipDIContainerProtocol, folderId: String) {
         self.clipDIContainer = clipDIContainer
-        self._viewModel = .init(wrappedValue: clipDIContainer.makeClipListViewModel(folderModel: folderModel))
+        self._viewModel = .init(wrappedValue: clipDIContainer.makeClipListViewModel(folderId: folderId))
     }
     
     var body: some View {
@@ -25,6 +25,31 @@ struct ClipListView: View {
                 }
             }
         }
-        .navigationTitle(viewModel.folderModel.title)
+        .navigationTitle(viewModel.folderModel?.title ?? "Loading...")
+        .toolbar {
+            if let folderModel = viewModel.folderModel{
+                Menu {
+                    NavigationLink(destination: EditFolderView(clipDIContainer: clipDIContainer, folderModel: folderModel, isUpdateFolder: $viewModel.isUpdatedFolder)){
+                        HStack{
+                            Text("폴더 수정")
+                            Image(systemName: "pencil.circle")
+                        }
+                    }
+
+                    Button(role: .destructive) {
+                        
+                    } label: {
+                        HStack{
+                            Text("폴더 삭제")
+                            Image(systemName: "trash")
+                        }
+                    }
+                    
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .foregroundStyle(.black)
+                }
+            }
+        }
     }
 }

@@ -19,7 +19,7 @@ struct MyFolderView: View {
     var body: some View {
         List{
             ForEach(viewModel.folders) { item in
-                NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderId: item.id)) {
+                NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderId: item.id, isUpdatedFolders: $viewModel.isUpdateFolders)) {
                     MyFolderRow(folder: item)
                 }
             }

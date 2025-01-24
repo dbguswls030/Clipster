@@ -11,10 +11,12 @@ import Domain
 struct ClipListView: View {
     @StateObject var viewModel: ClipListViewModel
     let clipDIContainer: ClipDIContainerProtocol
+    @Binding private var isUpdateFolder: Bool
     
-    init(clipDIContainer: ClipDIContainerProtocol, folderId: String) {
+    init(clipDIContainer: ClipDIContainerProtocol, folderId: String, isUpdatedFolders: Binding<Bool>) {
         self.clipDIContainer = clipDIContainer
         self._viewModel = .init(wrappedValue: clipDIContainer.makeClipListViewModel(folderId: folderId))
+        self._isUpdateFolder = isUpdatedFolders
     }
     
     var body: some View {
@@ -49,6 +51,11 @@ struct ClipListView: View {
                     Image(systemName: "ellipsis.circle")
                         .foregroundStyle(.black)
                 }
+            }
+        }
+        .onChange(of: viewModel.isUpdatedFolder) { newValue in
+            if newValue{
+                isUpdateFolder = true
             }
         }
     }

@@ -27,6 +27,10 @@ extension ClipUseCase{
     public func fetchURLs(urls: [String]) async throws -> [URLClipModel] {
         try await repository.fetchURLs(urls: urls)
     }
+    
+    public func removeURLClip(urlClipModel: URLClipModel, folderModel: FolderModel) async throws{
+        try await repository.removeURLClip(urlClipModel: urlClipModel, folderModel: folderModel)
+    }
 }
 extension ClipUseCase{
     // MARK: Folder

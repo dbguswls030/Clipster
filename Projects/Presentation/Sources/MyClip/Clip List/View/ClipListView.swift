@@ -27,6 +27,9 @@ struct ClipListView: View {
                     PreViewURLView(metaData: .constant(item.metaData))
                 }
             }
+            .onDelete { indexSet in
+                viewModel.removeClip(at: indexSet)
+            }
         }
         .navigationTitle(viewModel.folderModel?.title ?? "Loading...")
         .toolbar {

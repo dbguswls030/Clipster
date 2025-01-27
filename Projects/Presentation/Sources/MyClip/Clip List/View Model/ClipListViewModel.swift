@@ -81,6 +81,30 @@ final public class ClipListViewModel: ObservableObject{
         }
     }
     
+    func removeClip(at offsets: IndexSet){
+        guard let index = offsets.first else { return }
+        
+        let removeURLClipModel = urlClips[index]
+        folderModel?.URLs.remove(atOffsets: offsets)
+        urlClips.remove(atOffsets: offsets)
+    
+        guard let folderModel = folderModel else { return }
+        
+        
+        Task{
+            do{
+                try await useCase.removeURLClip(urlClipModel: removeURLClipModel, folderModel: folderModel)
+                
+                let newModels = try await useCase.fetchURLs(urls: folderModel.URLs)
+                await MainActor.run {
+                    urlClips = newModels
+                }
+            }catch{
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     func clearRemoveFolderProperty(){
         isShowingAlert = false
     }

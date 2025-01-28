@@ -21,7 +21,7 @@ final public class MyFolderViewModel: ObservableObject{
     
     @Published var folders: [FolderModel] = []
     
-    @Published var isUpdateFolders: Bool = false
+    @Published var updateMyFolders: Bool = false
     @Published var isShowingAlert: Bool = false
     @Published var deleteFolderIndex: IndexSet?
     
@@ -36,7 +36,7 @@ final public class MyFolderViewModel: ObservableObject{
                 let fetchFolder = try await useCase.fetchFolders()
                 await MainActor.run {
                     folders = fetchFolder
-                    isUpdateFolders = false
+                    updateMyFolders = false
                 }
             }catch{
                 print(error.localizedDescription)
@@ -45,7 +45,7 @@ final public class MyFolderViewModel: ObservableObject{
     }
     
     private func observerIsUpdateFolders(){
-        $isUpdateFolders
+        $updateMyFolders
             .filter{$0}
             .sink { [weak self] _ in
                 self?.fetchFolders()
@@ -60,7 +60,7 @@ final public class MyFolderViewModel: ObservableObject{
             do{
                 try await useCase.removeFolder(folder: folders[index])
                 await MainActor.run {
-                    isUpdateFolders = true
+                    updateMyFolders = true
                 }
             }catch{
                 print(error.localizedDescription)

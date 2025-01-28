@@ -12,18 +12,18 @@ struct ClipListView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: ClipListViewModel
     let clipDIContainer: ClipDIContainerProtocol
-    @Binding private var isUpdateFolder: Bool
+    @Binding private var updateMyFolders: Bool
     
-    init(clipDIContainer: ClipDIContainerProtocol, folderId: String, isUpdatedFolders: Binding<Bool>) {
+    init(clipDIContainer: ClipDIContainerProtocol, folderId: String, updateMyFolders: Binding<Bool>) {
         self.clipDIContainer = clipDIContainer
         self._viewModel = .init(wrappedValue: clipDIContainer.makeClipListViewModel(folderId: folderId))
-        self._isUpdateFolder = isUpdatedFolders
+        self._updateMyFolders = updateMyFolders
     }
     
     var body: some View {
         List{
             ForEach(viewModel.urlClips){ item in
-                NavigationLink(destination: ClipDetailView(clipDIContainer: clipDIContainer, URLClipModel: item)) {
+                NavigationLink(destination: ClipDetailView(clipDIContainer: clipDIContainer, URLClipModel: item, updateFromClipDetail: $viewModel.updateFromClipDetail)) {
                     PreViewURLView(metaData: .constant(item.metaData))
                 }
             }
@@ -35,7 +35,7 @@ struct ClipListView: View {
         .toolbar {
             if let folderModel = viewModel.folderModel{
                 Menu {
-                    NavigationLink(destination: EditFolderView(clipDIContainer: clipDIContainer, folderModel: folderModel, isUpdateFolder: $viewModel.isUpdatedFolder)){
+                    NavigationLink(destination: EditFolderView(clipDIContainer: clipDIContainer, folderModel: folderModel, isUpdateFolder: $viewModel.updateClipList)){
                         HStack{
                             Text("폴더 수정")
                             Image(systemName: "pencil.circle")
@@ -57,15 +57,20 @@ struct ClipListView: View {
                 }
             }
         }
-        .onChange(of: viewModel.isUpdatedFolder) { newValue in
+        .onChange(of: viewModel.updateClipList) { newValue in
             if newValue{
-                isUpdateFolder = true
+                updateMyFolders = true
             }
         }
         .onChange(of: viewModel.isRemoveFolder) { newValue in
             if newValue{
-                isUpdateFolder = true
+                updateMyFolders = true
                 dismiss()
+            }
+        }
+        .onChange(of: viewModel.updateFromClipDetail){ newValue in
+            if newValue{
+                updateMyFolders = true
             }
         }
         .alert(isPresented: $viewModel.isShowingAlert) {

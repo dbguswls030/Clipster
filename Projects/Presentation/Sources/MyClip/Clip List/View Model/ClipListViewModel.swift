@@ -24,18 +24,25 @@ final public class ClipListViewModel: ObservableObject{
     
     @Published var urlClips: [URLClipModel] = []
     @Published var folderModel: FolderModel?
-    @Published var isUpdatedFolder: Bool = false
+    @Published var updateClipList: Bool = false
     @Published var isRemoveFolder: Bool = false
     @Published var isShowingAlert: Bool = false
     
+    @Published var updateFromClipDetail: Bool = false
     
     private func bind(){
         fetchURLs()
         
-        $isUpdatedFolder
+        $updateClipList
             .filter{$0}
             .sink { [weak self] _ in
                 self?.fetchFolder()
+            }.store(in: &cancellables)
+        
+        $updateFromClipDetail
+            .filter{$0}
+            .sink { [weak self] _ in
+                self?.fetchURLs()
             }.store(in: &cancellables)
     }
     
@@ -47,6 +54,7 @@ final public class ClipListViewModel: ObservableObject{
                 await MainActor.run {
                     folderModel = newFolder
                     urlClips = newModels
+                    updateFromClipDetail = false
                 }
             }catch{
                 print(error.localizedDescription)
@@ -60,7 +68,7 @@ final public class ClipListViewModel: ObservableObject{
                 let newFolder = try await useCase.fetchFolder(folderId: folderId)
                 await MainActor.run {
                     folderModel = newFolder
-                    isUpdatedFolder = false
+                    updateClipList = false
                 }
             }catch{
                 print(error.localizedDescription)

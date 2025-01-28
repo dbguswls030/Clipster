@@ -17,4 +17,25 @@ final public class ClipDetailViewModel: ObservableObject{
         self.useCase = useCase
         self.URLClipModel = URLClipModel
     }
+    
+    @Published var isShowingAlert: Bool = false
+    @Published var isRemoveURLClip: Bool = false
+    
+    func removeURLClip(){
+        Task{
+            do{
+                try await useCase.removeURLClip(model: URLClipModel)
+                
+                await MainActor.run {
+                    isRemoveURLClip = true
+                }
+            }catch{
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func clearRemoveClipProperty(){
+        isShowingAlert = false
+    }
 }

@@ -9,12 +9,15 @@ import SwiftUI
 import Domain
 
 struct ClipDetailView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: ClipDetailViewModel
     let clipDIContainer: ClipDIContainerProtocol
+    @Binding var updateClipList: Bool
     
-    init(clipDIContainer: ClipDIContainerProtocol, URLClipModel: URLClipModel) {
+    init(clipDIContainer: ClipDIContainerProtocol, URLClipModel: URLClipModel, updateFromClipDetail: Binding<Bool>) {
         self.clipDIContainer = clipDIContainer
         self._viewModel = .init(wrappedValue: clipDIContainer.makeClipDetailViewModel(URLClipModel: URLClipModel))
+        self._updateClipList = updateFromClipDetail
     }
     
     var body: some View {
@@ -54,6 +57,52 @@ struct ClipDetailView: View {
                         
                 }
                 .padding(.horizontal)
+            }
+        }
+        .toolbar {
+            Menu {
+                NavigationLink(destination: EmptyView()){
+                    HStack{
+                        Text("클립 수정")
+                        Image(systemName: "pencil.circle")
+                    }
+                }
+                
+                Button(role: .destructive) {
+                    viewModel.isShowingAlert = true
+                } label: {
+                    HStack{
+                        Text("클립 삭제")
+                        Image(systemName: "trash")
+                    }
+                }
+                
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .foregroundStyle(.black)
+            }
+            
+        }
+        .alert(isPresented: $viewModel.isShowingAlert) {
+            Alert(title: Text("클립 삭제"),
+                  message: Text("정말 삭제하시겠습니까?"),
+                  primaryButton: .destructive(
+                    Text("삭제"),
+                    action: {
+                        viewModel.removeURLClip()
+                        viewModel.clearRemoveClipProperty()
+                    }),
+                  secondaryButton: .cancel(
+                    Text("취소"),
+                    action: {
+                        viewModel.clearRemoveClipProperty()
+                    })
+            )
+        }
+        .onChange(of: viewModel.isRemoveURLClip) { newValue in
+            if newValue{
+                updateClipList = true
+                dismiss()
             }
         }
     }

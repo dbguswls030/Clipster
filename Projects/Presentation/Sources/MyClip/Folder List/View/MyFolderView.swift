@@ -19,7 +19,7 @@ struct MyFolderView: View {
     var body: some View {
         List{
             ForEach(viewModel.folders) { item in
-                NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderId: item.id, isUpdatedFolders: $viewModel.isUpdateFolders)) {
+                NavigationLink(destination: ClipListView(clipDIContainer: clipDIContainer, folderId: item.id, updateMyFolders: $viewModel.updateMyFolders)) {
                     MyFolderRow(folder: item)
                 }
             }
@@ -51,7 +51,7 @@ struct MyFolderView: View {
         .toolbar {
             HStack{
                 NavigationLink {
-                    MakeFolderView(clipDIContainer: clipDIContainer, isUpdateFolder: $viewModel.isUpdateFolders)
+                    MakeFolderView(clipDIContainer: clipDIContainer, isUpdateFolder: $viewModel.updateMyFolders)
                 } label: {
                     Image(systemName: "folder.badge.plus")
                         .foregroundStyle(.black)

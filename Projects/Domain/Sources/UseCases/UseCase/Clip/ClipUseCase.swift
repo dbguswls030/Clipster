@@ -24,12 +24,20 @@ extension ClipUseCase{
         try await repository.makeURLClip(model: model)
     }
     
-    public func fetchURLs(urls: [String]) async throws -> [URLClipModel] {
-        try await repository.fetchURLs(urls: urls)
+    public func fetchURLClip(id: String) async throws -> URLClipModel{
+        try await repository.fetchURLClip(id: id)
+    }
+    
+    public func fetchURLClips(urls: [String]) async throws -> [URLClipModel] {
+        try await repository.fetchURLClips(urls: urls)
     }
     
     public func removeURLClip(model: URLClipModel) async throws{
         try await repository.removeURLClip(model: model)
+    }
+    
+    public func editURLClip(model: URLClipModel, description: String) async throws{
+        try await repository.editURLClip(model: model, description: description)
     }
 }
 extension ClipUseCase{

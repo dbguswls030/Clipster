@@ -50,7 +50,7 @@ final public class ClipListViewModel: ObservableObject{
         Task{
             do{
                 let newFolder = try await useCase.fetchFolder(folderId: folderId)
-                let newModels = try await useCase.fetchURLs(urls: newFolder.URLs)
+                let newModels = try await useCase.fetchURLClips(urls: newFolder.URLs)
                 await MainActor.run {
                     folderModel = newFolder
                     urlClips = newModels
@@ -104,7 +104,7 @@ final public class ClipListViewModel: ObservableObject{
             do{
                 try await useCase.removeURLClip(model: removeURLClipModel)
                 
-                let newModels = try await useCase.fetchURLs(urls: folderModel.URLs)
+                let newModels = try await useCase.fetchURLClips(urls: folderModel.URLs)
                 await MainActor.run {
                     urlClips = newModels
                 }

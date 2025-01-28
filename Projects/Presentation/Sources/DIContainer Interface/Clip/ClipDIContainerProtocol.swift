@@ -17,4 +17,5 @@ public protocol ClipDIContainerProtocol{
     func makeClipDetailViewModel(URLClipModel: URLClipModel) -> ClipDetailViewModel
     func makeMakeFolderViewModel() -> MakeFolderViewModel
     func makeEditFolderViewModel(folderModel: FolderModel) -> EditFolderViewModel
+    func makeEditClipViewModel(URLClipModel: URLClipModel) -> EditClipViewModel
 }

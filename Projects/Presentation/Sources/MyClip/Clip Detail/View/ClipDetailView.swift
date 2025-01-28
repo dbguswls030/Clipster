@@ -61,7 +61,7 @@ struct ClipDetailView: View {
         }
         .toolbar {
             Menu {
-                NavigationLink(destination: EmptyView()){
+                NavigationLink(destination: EditClipView(clipDIContainer: clipDIContainer, editURLClip: $viewModel.editURLClip, URLClipModel: viewModel.URLClipModel)){
                     HStack{
                         Text("클립 수정")
                         Image(systemName: "pencil.circle")
@@ -103,6 +103,11 @@ struct ClipDetailView: View {
             if newValue{
                 updateClipList = true
                 dismiss()
+            }
+        }
+        .onChange(of: viewModel.editURLClip){ newValue in
+            if newValue{
+                updateClipList = true
             }
         }
     }

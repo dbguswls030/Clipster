@@ -40,7 +40,16 @@ extension ClipRepository{
         }
     }
     
-    public func fetchURLs(urls: [String]) async throws -> [URLClipModel] {
+    public func fetchURLClip(id: String) async throws -> URLClipModel{
+        do{
+            let docRef = db.collection("URLs").document(id)
+            return try await docRef.getDocument(as: URLClipModelDTO.self).toEntity()
+        }catch{
+            throw error
+        }
+    }
+    
+    public func fetchURLClips(urls: [String]) async throws -> [URLClipModel] {
         var models = [URLClipModel]()
         do{
             let docRef = db.collection("URLs")
@@ -71,6 +80,15 @@ extension ClipRepository{
         }
     }
     
+    public func editURLClip(model: URLClipModel, description: String) async throws{
+        do{
+            let uid = Auth.auth().currentUser!.uid
+            let docRef = db.collection("URLs").document(model.id)
+            try await docRef.updateData(["description" : description])
+        }catch{
+            print(error.localizedDescription)
+        }
+    }
 }
 extension ClipRepository{
     // MARK: Folder

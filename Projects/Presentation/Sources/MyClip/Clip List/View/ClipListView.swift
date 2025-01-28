@@ -24,7 +24,14 @@ struct ClipListView: View {
         List{
             ForEach(viewModel.urlClips){ item in
                 NavigationLink(destination: ClipDetailView(clipDIContainer: clipDIContainer, URLClipModel: item, updateFromClipDetail: $viewModel.updateFromClipDetail)) {
-                    PreViewURLView(metaData: .constant(item.metaData))
+                    LazyVStack{
+                        PreViewURLView(metaData: .constant(item.metaData))
+                        Divider()
+                        Text(item.description)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .lineLimit(1)
+                            .padding(.vertical, 3)
+                    }
                 }
             }
             .onDelete { indexSet in

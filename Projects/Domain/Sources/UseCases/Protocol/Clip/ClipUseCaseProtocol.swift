@@ -12,7 +12,7 @@ public protocol ClipUseCaseProtocol{
     func fetchMetaData(url: URL) async throws -> URLMetaData?
     func makeURLClip(model: URLClipModel) async throws -> String
     func fetchURLs(urls: [String]) async throws -> [URLClipModel]
-    func removeURLClip(urlClipModel: URLClipModel, folderModel: FolderModel) async throws
+    func removeURLClip(model: URLClipModel) async throws
     
     // MARK: Folder
     func makeFolder(newFolderName: String) async throws

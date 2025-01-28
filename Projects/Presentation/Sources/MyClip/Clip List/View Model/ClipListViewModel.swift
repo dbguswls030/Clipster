@@ -28,6 +28,7 @@ final public class ClipListViewModel: ObservableObject{
     @Published var isRemoveFolder: Bool = false
     @Published var isShowingAlert: Bool = false
     
+    
     private func bind(){
         fetchURLs()
         
@@ -93,7 +94,7 @@ final public class ClipListViewModel: ObservableObject{
         
         Task{
             do{
-                try await useCase.removeURLClip(urlClipModel: removeURLClipModel, folderModel: folderModel)
+                try await useCase.removeURLClip(model: removeURLClipModel)
                 
                 let newModels = try await useCase.fetchURLs(urls: folderModel.URLs)
                 await MainActor.run {

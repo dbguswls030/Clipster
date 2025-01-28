@@ -54,17 +54,17 @@ extension ClipRepository{
         }
     }
     
-    public func removeURLClip(urlClipModel: URLClipModel, folderModel: FolderModel) async throws {
+    public func removeURLClip(model: URLClipModel) async throws {
         do{
             let uid = Auth.auth().currentUser!.uid
             // 폴더 안에 있는 URL 삭제
             let docRef = db.collection("URLs")
-            try await docRef.document(urlClipModel.id).delete()
+            try await docRef.document(model.id).delete()
             
             // 폴더 중 url id 삭제
-            let folderDocRef = db.collection("users").document(uid).collection("folders").document(folderModel.id)
+            let folderDocRef = db.collection("users").document(uid).collection("folders").document(model.folderId)
             try await folderDocRef.updateData([
-                "URLs" : FirebaseFirestore.FieldValue.arrayRemove([urlClipModel.id])
+                "URLs" : FirebaseFirestore.FieldValue.arrayRemove([model.id])
             ])
         }catch{
             throw error

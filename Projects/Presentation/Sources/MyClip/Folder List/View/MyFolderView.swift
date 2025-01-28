@@ -23,10 +23,10 @@ struct MyFolderView: View {
                     MyFolderRow(folder: item)
                 }
             }
-            .onDelete { indexSet in
-                viewModel.isShowingAlert = true
-                viewModel.deleteFolderIndex = indexSet
-            }
+//            .onDelete { indexSet in
+//                viewModel.isShowingAlert = true
+//                viewModel.deleteFolderIndex = indexSet
+//            }
             .alert(isPresented: $viewModel.isShowingAlert) {
                 Alert(title: Text("폴더 삭제"),
                       message: Text("폴더와 폴더 안에 저장된 내용이 모두 삭제됩니다. 정말 삭제하시겠습니까?"),

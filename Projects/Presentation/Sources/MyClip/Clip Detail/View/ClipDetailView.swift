@@ -18,14 +18,42 @@ struct ClipDetailView: View {
     }
     
     var body: some View {
-        List{
-            LazyVStack(alignment: .leading, spacing: 10){
-                Button(action: {
-                    openURL(viewModel.URLClipModel.URL)
-                }) {
-                    PreViewURLView(metaData: .constant(viewModel.URLClipModel.metaData))
+        ScrollView{
+            LazyVStack(alignment: .leading, spacing: 30){
+                HStack{
+                    Text("🔗 링크")
+                        .font(.title2)
+                        .bold()
+                        .foregroundStyle(.black)
+                        .padding(.leading)
+                    Spacer()
                 }
-                Text(viewModel.URLClipModel.description)
+                GroupBox{
+                    Button(action: {
+                        openURL(viewModel.URLClipModel.URL)
+                    }) {
+                        PreViewURLView(metaData: .constant(viewModel.URLClipModel.metaData))
+                    }
+                }
+                .padding(.horizontal)
+                
+                HStack{
+                    HStack{
+                        Text("📝 메모")
+                            .font(.title2)
+                            .bold()
+                            .foregroundStyle(.black)
+                            .padding(.leading)
+                        Spacer()
+                    }
+                }
+                GroupBox{
+                    Text(viewModel.URLClipModel.description)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .multilineTextAlignment(.leading)
+                        
+                }
+                .padding(.horizontal)
             }
         }
     }

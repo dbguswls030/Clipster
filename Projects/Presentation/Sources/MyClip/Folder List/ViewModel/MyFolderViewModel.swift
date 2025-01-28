@@ -54,9 +54,11 @@ final public class MyFolderViewModel: ObservableObject{
     }
     
     func removeFolder(at offsets: IndexSet){
+        guard let index = offsets.first else { return }
+        folders.remove(atOffsets: offsets)
         Task{
             do{
-                try await useCase.removeFolder(folder: folders[offsets.first!])
+                try await useCase.removeFolder(folder: folders[index])
                 await MainActor.run {
                     isUpdateFolders = true
                 }

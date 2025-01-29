@@ -11,7 +11,7 @@ struct ToastModel: Equatable{
     let url: URL
     let duration: Double
     
-    init(url: URL, duration: Double = 3.0) {
+    init(url: URL, duration: Double = 2.0) {
         self.url = url
         self.duration = duration
     }

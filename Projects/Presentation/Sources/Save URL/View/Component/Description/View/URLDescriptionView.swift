@@ -9,6 +9,7 @@ import SwiftUI
 
 struct URLDescriptionView: View {
     @Binding var description: String
+    var focusTextEditor: FocusState<Bool>.Binding
     
     var body: some View {
         VStack(spacing: 15){
@@ -29,6 +30,7 @@ struct URLDescriptionView: View {
                             }
                         }
                     }
+                    .focused(focusTextEditor)
                     .overlay(alignment: .topLeading){
                         Text("간단한 메모를 작성해 주세요.")
                             .foregroundStyle(description.isEmpty ? .gray : .clear)
@@ -51,6 +53,6 @@ struct URLDescriptionView: View {
     }
 }
 
-#Preview {
-    URLDescriptionView(description: .constant(""))
-}
+//#Preview {
+//    URLDescriptionView(description: .constant(""))
+//}

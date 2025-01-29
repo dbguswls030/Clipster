@@ -11,5 +11,5 @@ public protocol DIContainerProtocol{
     func makeAuthDIContainer() -> AuthDIContainerProtocol
     func makeRootDIContainer() -> RootDIContainerProtocol
     func makeMyDIContainer() -> MyDIContainerProtocol
-    func makeSaveDIContainer() -> SaveDIContainerProtocol
+    func makeClipDIContainer() -> ClipDIContainerProtocol
 }

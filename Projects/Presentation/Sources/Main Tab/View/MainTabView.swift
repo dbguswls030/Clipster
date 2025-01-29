@@ -19,33 +19,36 @@ public struct MainTabView: View {
     }
     
     public var body: some View {
-        NavigationStack {
+        NavigationStack{
             TabView(selection: $viewModel.selection){
-                MyClipView()
+                MyFolderView(clipDIContainer: DIContainer.makeClipDIContainer())
                     .tabItem {
                         Label("clips", systemImage: "star")
                     }
                     .tag(TabCase.clips)
+                
                 MyPageView(viewModel: DIContainer.makeMyDIContainer().makeMyViewModel(), router: rootRouter)
                     .tabItem{
                         Label("My", systemImage: "star.fill")
                     }
                     .tag(TabCase.myPage)
             }
-            .onChange(of: scenePhase) { phase in
-                viewModel.handleScenePhaseChange(phase)
-            }
-            .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
-            .navigationDestination(isPresented: $viewModel.isPresentSaveURL) {
-                SaveURLView(viewModel: DIContainer.makeSaveDIContainer().makeSaveViewModel(clipBoardURL: viewModel.pastedURL?.absoluteString ?? ""))
+            .navigationTitle(viewModel.selection == .clips ? "나의 폴더" : "마이페이지")
+            .navigationDestination(isPresented: $viewModel.isPresentSaveURL, destination: {
+                SaveURLView(clipDIContainer: DIContainer.makeClipDIContainer(), pastedURL: viewModel.pastedURL?.absoluteString ?? "")
                     .onAppear{
                         viewModel.isShowingSaveURLView = true
                     }
                     .onDisappear{
                         viewModel.isShowingSaveURLView = false
                     }
-            }
+            })
         }
+        .onChange(of: scenePhase) { phase in
+            viewModel.handleScenePhaseChange(phase)
+        }
+        .toastView(toast: $viewModel.toast, isPresentSaveURL: $viewModel.isPresentSaveURL)
+        
     }
 }
 

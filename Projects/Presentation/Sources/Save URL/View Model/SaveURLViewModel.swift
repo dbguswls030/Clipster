@@ -14,23 +14,26 @@ import Domain
 final public class SaveURLViewModel: ObservableObject{
     
     private var cancellables = Set<AnyCancellable>()
-    private let useCase: SaveUseCaseProtocol
+    private let useCase: ClipUseCaseProtocol
     
-    public init(useCase: SaveUseCaseProtocol, clipBoradURL: String? = ""){
+    public init(useCase: ClipUseCaseProtocol, clipBoradURL: String? = ""){
         self.useCase = useCase
         if let url = clipBoradURL{ self.url = url }
         bind()
     }
     
-    public init(useCase: SaveUseCaseProtocol){
+    public init(useCase: ClipUseCaseProtocol){
         self.useCase = useCase
         bind()
     }
     
     @Published var metaData: URLMetaData?
-    @Published var url: String = ""{
-        didSet{
-            isLoadingForTextField = true
+    @Published var url: String = ""
+    {
+        didSet(oldValue){
+            if url != oldValue{
+                isLoadingForTextField = true
+            }
         }
     }
     
@@ -44,16 +47,20 @@ final public class SaveURLViewModel: ObservableObject{
     
     @Published var isSaved: Bool = false
     @Published var isLoadingDuringSave: Bool = false
-    @Published var isLoadingDuringMakeFolder: Bool = false
+    
+    @Published var isUpdateFolders: Bool = false
     
     private func bind(){
         $url
             .debounce(for: 1, scheduler: RunLoop.main)
             .map{URL(string: $0)}
             .removeDuplicates()
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] url in
                 if let validURL = url {
                     self?.fetchURLMetaData(url: validURL)
+                }else{
+                    self?.isLoadingForTextField = false
                 }
             })
             .store(in: &cancellables)
@@ -69,6 +76,13 @@ final public class SaveURLViewModel: ObservableObject{
             }.store(in: &cancellables)
         
         fetchFolders()
+        
+        $isUpdateFolders
+            .filter{$0}
+            .sink { [weak self] _ in
+                self?.fetchFolders()
+            }
+            .store(in: &cancellables)
     }
     
     private func fetchURLMetaData(url: URL){
@@ -81,6 +95,9 @@ final public class SaveURLViewModel: ObservableObject{
                 }
             }catch{
                 print(error.localizedDescription)
+                await MainActor.run {
+                    self.isLoadingForTextField = false
+                }
             }
         }
     }
@@ -113,30 +130,13 @@ final public class SaveURLViewModel: ObservableObject{
     func fetchFolders(){
         Task{
             do{
-                let folders = try await useCase.fetchFolder()
+                let folders = try await useCase.fetchFolders()
                 await MainActor.run {
                     self.folderHierachy = folders
+                    isUpdateFolders = false
                 }
             }catch{
                 print(error.localizedDescription)
-            }
-        }
-    }
-    
-    func makeFolder(){
-        self.isLoadingDuringMakeFolder = true
-        Task{
-            do{
-                try await useCase.makeFolder()
-                let folders = try await useCase.fetchFolder()
-                await MainActor.run {
-                    self.isLoadingDuringMakeFolder = false
-                    self.folderHierachy = folders
-                }
-            }catch{
-                await MainActor.run {
-                    self.isLoadingDuringMakeFolder = false
-                }
             }
         }
     }

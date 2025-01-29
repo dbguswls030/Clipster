@@ -9,6 +9,12 @@ import SwiftUI
 
 struct FolderSectionView: View {
     @ObservedObject var viewModel: SaveURLViewModel
+    let DIContainer: ClipDIContainerProtocol
+    
+    init(viewModel: SaveURLViewModel, DIContainer: ClipDIContainerProtocol) {
+        self.viewModel = viewModel
+        self.DIContainer = DIContainer
+    }
     
     var body: some View {
         VStack(spacing: 15){
@@ -19,8 +25,8 @@ struct FolderSectionView: View {
                     .foregroundStyle(.black)
                     .padding(.leading)
                 Spacer()
-                Button{
-                    viewModel.makeFolder()
+                NavigationLink {
+                    MakeFolderView(clipDIContainer: DIContainer, isUpdateFolder: $viewModel.isUpdateFolders)
                 } label: {
                     Image(systemName: "plus")
                 }
@@ -28,7 +34,6 @@ struct FolderSectionView: View {
                 .tint(.gray)
                 .buttonBorderShape(.capsule)
                 .padding(.trailing)
-                .disabled(viewModel.isLoadingDuringMakeFolder)
             }
             if !viewModel.folderHierachy.isEmpty{
                 GroupBox{

@@ -26,7 +26,7 @@ final public class DIContainer: DIContainerProtocol{
         return RootDIContainer()
     }
     
-    public func makeSaveDIContainer() -> SaveDIContainerProtocol {
-        return SaveDIContainer()
+    public func makeClipDIContainer() -> ClipDIContainerProtocol {
+        return ClipDIContainer()
     }
 }
